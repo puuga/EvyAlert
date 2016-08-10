@@ -1,4 +1,130 @@
 <resources>
     <string name="app_name">EvyAlert</string>
     <string name="action_settings">Settings</string>
+    <string name="facebook_app_id">892710704194179</string>
+    <string name="fb_login_protocol_scheme" translatable="false">1166630520024561</string>
+    <string name="login_ok">Login OK</string>
+    <string name="login_cancel">Login CANCEL</string>
+    <string name="need_login">Need login</string>
+    <string name="need_login_description">Need login</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="open_drawer_menu" translatable="false">open drawer menu</string>
+    <string name="close_drawer_menu" translatable="false">close drawer menu</string>
+    <string name="profile">Profile</string>
+    <string name="about">About</string>
+    <string name="progressing">progressing…</string>
+
+    <string-array name="scope">
+        <item>Near by 20 Km</item>
+        <item>Near by 50 Km</item>
+        <item>Last 2 days</item>
+        <item>Northern, last 2 days</item>
+        <item>Northeastern, last 2 days</item>
+        <item>Central, last 2 days</item>
+        <item>Eastern, last 2 days</item>
+        <item>Southern, last 2 days</item>
+    </string-array>
+
+    <string-array name="scope_northern">
+        <item>Chiang Mai</item>
+        <item>Chiang Rai</item>
+        <item>Kamphaeng Phet</item>
+        <item>Lampang</item>
+        <item>Lamphun</item>
+        <item>Mae Hong Son</item>
+        <item>Nakhon Sawan</item>
+        <item>Nan</item>
+        <item>Phayao</item>
+        <item>Phetchabun</item>
+        <item>Phichit</item>
+        <item>Phitsanulok</item>
+        <item>Phrae</item>
+        <item>Sukhothai</item>
+        <item>Tak</item>
+        <item>Uthai Thani</item>
+        <item>Uttaradit</item>
+    </string-array>
+
+    <string-array name="scope_northeastern">
+        <item>Amnat Charoen</item>
+        <item>Bueng Kan</item>
+        <item>Buri Ram</item>
+        <item>Chaiyaphum</item>
+        <item>Kalasin</item>
+        <item>Khon Kaen</item>
+        <item>Loei</item>
+        <item>Maha Sarakham</item>
+        <item>Mukdahan</item>
+        <item>Nakhon Phanom</item>
+        <item>Nakhon Ratchasima</item>
+        <item>Nong Bua Lamphu</item>
+        <item>Nong Khai</item>
+        <item>Roi Et</item>
+        <item>Sakon Nakhon</item>
+        <item>Si Sa Ket</item>
+        <item>Surin</item>
+        <item>Ubon Ratchathani</item>
+        <item>Udon Thani</item>
+        <item>Yasothon</item>
+    </string-array>
+
+    <string-array name="scope_central">
+        <item>Ang Thong</item>
+        <item>Bangkok</item>
+        <item>Chainat</item>
+        <item>Kanchanaburi</item>
+        <item>Lop Buri</item>
+        <item>Nakhon Nayok</item>
+        <item>Nakhon Pathom</item>
+        <item>Nonthaburi</item>
+        <item>Pathum Thani</item>
+        <item>Phetchaburi</item>
+        <item>Phra Nakhon Si Ayutthaya</item>
+        <item>Prachuap Khiri Khan</item>
+        <item>Ratchaburi</item>
+        <item>Samut Prakan</item>
+        <item>Samut Sakhon</item>
+        <item>Samut Songkhram</item>
+        <item>Saraburi</item>
+        <item>Sing Buri</item>
+        <item>Suphan Buri</item>
+    </string-array>
+
+    <string-array name="scope_eastern">
+        <item>Chachoengsao</item>
+        <item>Chanthaburi</item>
+        <item>Chon Buri</item>
+        <item>Prachin Buri</item>
+        <item>Rayong</item>
+        <item>Sa Kaeo</item>
+        <item>Trat</item>
+    </string-array>
+
+    <string-array name="scope_southern">
+        <item>Chumphon</item>
+        <item>Krabi</item>
+        <item>Nakhon Si Thammarat</item>
+        <item>Narathiwat</item>
+        <item>Pattani</item>
+        <item>Phang Nga</item>
+        <item>Phatthalung</item>
+        <item>Phuket</item>
+        <item>Ranong</item>
+        <item>Satun</item>
+        <item>Songkhla</item>
+        <item>Surat Thani</item>
+        <item>Trang</item>
+        <item>Yala</item>
+    </string-array>
+
+    <string-array name="event_type">
+        <item>Accident</item>
+        <item>Natural Disaster</item>
+        <item>Other</item>
+    </string-array>
+
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_main">EvyAlert</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>
