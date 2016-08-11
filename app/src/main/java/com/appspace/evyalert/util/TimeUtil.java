@@ -12,4 +12,12 @@ public class TimeUtil {
         Date now = new Date();
         return sdfDate.format(now);
     }
+
+    public static long getCurrentTime() {
+        return new Date().getTime();
+    }
+
+    public static long getLast2DaysTime() {
+        return new Date().getTime() - 17280000;
+    }
 }

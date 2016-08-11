@@ -36,6 +36,7 @@ import com.appspace.appspacelibrary.manager.Contextor;
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.BuildConfig;
 import com.appspace.evyalert.R;
+import com.appspace.evyalert.fragment.EventListFragment;
 import com.appspace.evyalert.fragment.MapFragment;
 import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.util.ChromeCustomTabUtil;
@@ -362,7 +363,7 @@ public class MainActivity extends AppCompatActivity implements
     private void addEvent() {
         String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-        String userPhotoUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().getPath();
+        String userPhotoUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
         String title = "test test";
         String eventPhotoUrl = "https://firebasestorage.googleapis.com/v0/b/evyalert.appspot.com/o/images%2F13320908_960637794056268_7477080000136888361_o.jpg?alt=media&token=0d7f3b97-ec62-46e9-917a-010111ea1ff3";
         String eventTypeIndex = "0";
@@ -559,6 +560,7 @@ public class MainActivity extends AppCompatActivity implements
         String[] tabTitles = {"MAP", "LIST"};
 
         MapFragment mapFragment;
+        EventListFragment eventListFragment;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -575,7 +577,10 @@ public class MainActivity extends AppCompatActivity implements
                     }
                     return mapFragment;
                 case 1:
-                    return PlaceholderFragment.newInstance(position + 1);
+                    if (eventListFragment == null) {
+                        eventListFragment = EventListFragment.newInstance();
+                    }
+                    return eventListFragment;
                 default:
                     return PlaceholderFragment.newInstance(position + 1);
             }

@@ -2,6 +2,7 @@ package com.appspace.evyalert.model;
 
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,19 +12,19 @@ import java.util.Map;
  */
 @IgnoreExtraProperties
 public class Event {
-    public String userUid;
-    public String userName;
-    public String userPhotoUrl;
-    public String title;
-    public String eventPhotoUrl;
-    public String eventTypeIndex;
-    public String provinceIndex;
-    public String regionIndex;
-    public double lat;
-    public double lng;
-    public String address;
-    public String createdAt;
-    public long createdAtLong;
+    @SerializedName("user_uid") public String userUid;
+    @SerializedName("user_name") public String userName;
+    @SerializedName("user_photo_url") public String userPhotoUrl;
+    @SerializedName("title") public String title;
+    @SerializedName("event_photo_url") public String eventPhotoUrl;
+    @SerializedName("event_type_index") public String eventTypeIndex;
+    @SerializedName("province_index") public String provinceIndex;
+    @SerializedName("region_index") public String regionIndex;
+    @SerializedName("lat") public double lat;
+    @SerializedName("lng") public double lng;
+    @SerializedName("address") public String address;
+    @SerializedName("created_at") public String createdAt;
+    @SerializedName("created_at_long") public long createdAtLong;
 
     public Event() {
 
