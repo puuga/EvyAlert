@@ -38,11 +38,9 @@ import com.appspace.evyalert.BuildConfig;
 import com.appspace.evyalert.R;
 import com.appspace.evyalert.fragment.EventListFragment;
 import com.appspace.evyalert.fragment.MapFragment;
-import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.util.ChromeCustomTabUtil;
 import com.appspace.evyalert.util.GeocoderUtil;
 import com.appspace.evyalert.util.Helper;
-import com.appspace.evyalert.util.TimeUtil;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -55,19 +53,10 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.crash.FirebaseCrash;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
@@ -94,9 +83,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
-    private DatabaseReference mDatabaseRoot;
-    private DatabaseReference mEventsRef;
-    private DatabaseReference mUserEventsRef;
     private FirebaseStorage mStorage;
     private StorageReference mImageStorageRef;
 
@@ -140,17 +126,11 @@ public class MainActivity extends AppCompatActivity implements
         super.onStart();
 
         mGoogleApiClient.connect();
-
-        mEventsRef.addChildEventListener(childEventListener);
-//        mDatabaseRoot.addChildEventListener(childEventListener);
     }
 
     @Override
     protected void onStop() {
         mGoogleApiClient.disconnect();
-
-        mEventsRef.removeEventListener(childEventListener);
-//        mDatabaseRoot.removeEventListener(childEventListener);
 
         super.onStop();
     }
@@ -196,10 +176,6 @@ public class MainActivity extends AppCompatActivity implements
         }
         mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
         fetchConfig();
-
-        mDatabaseRoot = FirebaseDatabase.getInstance().getReference();
-        mEventsRef = mDatabaseRoot.child("events");
-        mUserEventsRef = mDatabaseRoot.child("user-events");
 
         mStorage = FirebaseStorage.getInstance();
         mImageStorageRef = mStorage.getReferenceFromUrl("gs://evyalert.appspot.com").child("images");
@@ -372,24 +348,7 @@ public class MainActivity extends AppCompatActivity implements
         double lat = mCurrentLocation == null ? 16.7 : mCurrentLocation.getLatitude();
         double lng = mCurrentLocation == null ? 100.7 : mCurrentLocation.getLongitude();
 //        String address = "Thanon Srisaman, Tambon Ban Mai, Amphoe Pak Kret, Chang Wat Nonthaburi 11120";
-        String address = GeocoderUtil.getAddress(this, lat, lng);
-        String createdAt = TimeUtil.getCurrentTimeStamp();
-        long createdAtLong = new Date().getTime();
-        writeNewEvent(
-                userUid,
-                userName,
-                userPhotoUrl,
-                title,
-                eventPhotoUrl,
-                eventTypeIndex,
-                provinceIndex,
-                regionIndex,
-                lat,
-                lng,
-                address,
-                createdAt,
-                createdAtLong
-        );
+
         GeocoderUtil.getDistrict(this, lat, lng);
         GeocoderUtil.getProvince(this, lat, lng);
 
@@ -397,33 +356,6 @@ public class MainActivity extends AppCompatActivity implements
         bundle.putString(Helper.DISTRICT, GeocoderUtil.getDistrict(this, lat, lng));
         bundle.putString(Helper.PROVINCE, GeocoderUtil.getProvince(this, lat, lng));
         mFirebaseAnalytics.logEvent(Helper.SUBMIT_EVENT, bundle);
-    }
-
-    private void writeNewEvent(String userUid, String userName, String userPhotoUrl, String title, String eventPhotoUrl, String eventTypeIndex, String provinceIndex, String regionIndex, double lat, double lng, String address, String createdAt, long createdAtLong) {
-        String key = mEventsRef.push().getKey();
-        Event event = new Event();
-        event.userUid = userUid;
-        event.userName = userName;
-        event.userPhotoUrl = userPhotoUrl;
-        event.title = title;
-        event.eventPhotoUrl = eventPhotoUrl;
-        event.eventTypeIndex = eventTypeIndex;
-        event.provinceIndex = provinceIndex;
-        event.regionIndex = regionIndex;
-        event.lat = lat;
-        event.lng = lng;
-        event.address = address;
-        event.createdAt = createdAt;
-        event.createdAtLong = createdAtLong;
-        Map<String, Object> eventValues = event.toMap();
-
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/events/" + key, eventValues);
-//        childUpdates.put("/user-events/" + userUid + "/" + key, eventValues);
-
-        mDatabaseRoot.updateChildren(childUpdates);
-
-        mUserEventsRef.child(userUid).push().setValue(key);
     }
 
     protected void gotoLoginActivity() {
@@ -603,38 +535,4 @@ public class MainActivity extends AppCompatActivity implements
 //            return sb;
         }
     }
-
-    ChildEventListener childEventListener = new ChildEventListener() {
-
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            LoggerUtils.log2D("ChildEventListener", "onChildAdded: " + dataSnapshot.getKey());
-            Event event = dataSnapshot.getValue(Event.class);
-            LoggerUtils.log2D("ChildEventListener", event.userName);
-            LoggerUtils.log2D("ChildEventListener", event.createdAt);
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            LoggerUtils.log2D("ChildEventListener", "onChildChanged: " + dataSnapshot.getKey());
-            Event event = dataSnapshot.getValue(Event.class);
-            LoggerUtils.log2D("ChildEventListener", event.userName);
-            LoggerUtils.log2D("ChildEventListener", event.createdAt);
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-            LoggerUtils.log2D("ChildEventListener", "onChildChanged: " + dataSnapshot.getKey());
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            LoggerUtils.log2D("ChildEventListener", "onChildChanged: " + dataSnapshot.getKey());
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-            LoggerUtils.log2D("ChildEventListener", "onCancelled: " + databaseError.getMessage());
-        }
-    };
 }

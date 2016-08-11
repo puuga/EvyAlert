@@ -15,12 +15,6 @@ import com.appspace.evyalert.activity.MainActivity;
 import com.appspace.evyalert.adapter.EventAdapter;
 import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.util.TimeUtil;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,8 +28,6 @@ public class EventListFragment extends Fragment implements EventAdapter.OnEventI
     Event[] events;
     RecyclerView recyclerView;
     List<Event> eventList;
-
-    private DatabaseReference mEventsRef;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -56,16 +48,8 @@ public class EventListFragment extends Fragment implements EventAdapter.OnEventI
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_event_list, container, false);
         initInstances(view);
-        initFirebase();
 
-
-
-        loadEvent(2);
         return view;
-    }
-
-    private void initFirebase() {
-        mEventsRef = FirebaseDatabase.getInstance().getReference().child("events");
     }
 
     private void initInstances(View view) {
@@ -121,28 +105,6 @@ public class EventListFragment extends Fragment implements EventAdapter.OnEventI
         Long last2Day = TimeUtil.getLast2DaysTime();
         LoggerUtils.log2D("loadEventLast2Days", "now: " + now);
         LoggerUtils.log2D("loadEventLast2Days", "last2Day: " + last2Day);
-//        Query eventsLast2Days = mEventsRef
-//                .startAt(now)
-//                .endAt(last2Day);
-        Query eventsLast2Days = mEventsRef.orderByChild("createdAtLong").limitToFirst(10);
-        eventsLast2Days.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                LoggerUtils.log2D("loadEventLast2Days", "count: " + dataSnapshot.getChildrenCount());
-                eventList.clear();
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    Event event = data.getValue(Event.class);
-                    eventList.add(event);
-                    LoggerUtils.log2D("loadEventLast2Days", "event: " + data.getKey());
-                }
-                reloadRecyclerView();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     private void loadDataToRecyclerView(Event[] events) {
