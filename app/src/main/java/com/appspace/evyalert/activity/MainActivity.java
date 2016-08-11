@@ -61,6 +61,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -94,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements
     private DatabaseReference mDatabaseRoot;
     private DatabaseReference mEventsRef;
     private DatabaseReference mUserEventsRef;
+    private FirebaseStorage mStorage;
+    private StorageReference mImageStorageRef;
 
     private GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
@@ -195,6 +199,9 @@ public class MainActivity extends AppCompatActivity implements
         mDatabaseRoot = FirebaseDatabase.getInstance().getReference();
         mEventsRef = mDatabaseRoot.child("events");
         mUserEventsRef = mDatabaseRoot.child("user-events");
+
+        mStorage = FirebaseStorage.getInstance();
+        mImageStorageRef = mStorage.getReferenceFromUrl("gs://evyalert.appspot.com").child("images");
     }
 
     private void fetchConfig() {
@@ -357,7 +364,7 @@ public class MainActivity extends AppCompatActivity implements
         String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
         String userPhotoUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().getPath();
         String title = "test test";
-        String eventPhotoUrl = "https://firebasestorage.googleapis.com/v0/b/evyalert.appspot.com/o/13320908_960637794056268_7477080000136888361_o.jpg?alt=media&token=a554c23c-b553-468b-83fb-5d8cc6672f26";
+        String eventPhotoUrl = "https://firebasestorage.googleapis.com/v0/b/evyalert.appspot.com/o/images%2F13320908_960637794056268_7477080000136888361_o.jpg?alt=media&token=0d7f3b97-ec62-46e9-917a-010111ea1ff3";
         String eventTypeIndex = "0";
         String provinceIndex = "0";
         String regionIndex = "0";
@@ -465,13 +472,6 @@ public class MainActivity extends AppCompatActivity implements
                 this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
                 ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(
@@ -517,9 +517,6 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class PlaceholderFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
@@ -552,10 +549,6 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         int[] imageResId = {
