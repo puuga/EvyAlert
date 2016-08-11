@@ -3,6 +3,11 @@
     package="com.appspace.evyalert">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true"/>
 
     <application
         android:name=".EvyAlertApplication"
@@ -28,6 +33,12 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="01075c4a0f13026f4d0cdf1281e7fa2ab87babfa" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCrqU9eKGvklA-m6QRaQnHN0FIv7YNYW2s"/>
 
         <activity
             android:name=".activity.LoginActivity"
@@ -53,7 +64,7 @@
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

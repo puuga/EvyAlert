@@ -23,8 +23,8 @@ android {
         applicationId "com.appspace.evyalert"
         minSdkVersion 17
         targetSdkVersion 24
-        versionCode 21
-        versionName "1.4.4"
+        versionCode 43
+        versionName "1.6.2"
     }
     buildTypes {
         release {
@@ -56,11 +56,14 @@ dependencies {
     compile 'com.google.firebase:firebase-config:9.4.0'
     compile 'com.google.firebase:firebase-crash:9.4.0'
     compile 'com.google.firebase:firebase-database:9.4.0'
+    compile 'com.google.android.gms:play-services-location:9.4.0'
+    compile 'com.google.android.gms:play-services-maps:9.4.0'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.afollestad.material-dialogs:commons:0.8.6.2'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'jp.wasabeef:glide-transformations:2.0.1'
+    compile 'com.android.support:support-v4:24.1.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

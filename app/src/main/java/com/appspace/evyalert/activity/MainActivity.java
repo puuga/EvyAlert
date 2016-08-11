@@ -1,13 +1,18 @@
 package com.appspace.evyalert.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -31,11 +36,18 @@ import com.appspace.appspacelibrary.manager.Contextor;
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.BuildConfig;
 import com.appspace.evyalert.R;
+import com.appspace.evyalert.fragment.MapFragment;
 import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.util.ChromeCustomTabUtil;
+import com.appspace.evyalert.util.GeocoderUtil;
 import com.appspace.evyalert.util.Helper;
 import com.appspace.evyalert.util.TimeUtil;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -56,7 +68,11 @@ import java.util.Map;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements
+        View.OnClickListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -75,7 +91,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
-    private DatabaseReference mDatabase;
+    private DatabaseReference mDatabaseRoot;
+    private DatabaseReference mEventsRef;
+    private DatabaseReference mUserEventsRef;
+
+    private GoogleApiClient mGoogleApiClient;
+    LocationRequest mLocationRequest;
+    Location mCurrentLocation;
 
     // Remote Config keys
     private static final String ABOUT_URL_CONFIG_KEY = "about_url";
@@ -100,23 +122,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initDrawer();
         initFirebase();
         initInstances();
+        initGoogleApiClient();
         initTab();
 
         loadProfileData();
+
+        createLocationRequest();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        mDatabase.addChildEventListener(childEventListener);
+        mGoogleApiClient.connect();
+
+        mEventsRef.addChildEventListener(childEventListener);
+//        mDatabaseRoot.addChildEventListener(childEventListener);
     }
 
     @Override
     protected void onStop() {
-        mDatabase.removeEventListener(childEventListener);
+        mGoogleApiClient.disconnect();
+
+        mEventsRef.removeEventListener(childEventListener);
+//        mDatabaseRoot.removeEventListener(childEventListener);
 
         super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        stopLocationUpdates();
+
+        super.onPause();
     }
 
     private void initDrawer() {
@@ -149,7 +192,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
         fetchConfig();
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabaseRoot = FirebaseDatabase.getInstance().getReference();
+        mEventsRef = mDatabaseRoot.child("events");
+        mUserEventsRef = mDatabaseRoot.child("user-events");
     }
 
     private void fetchConfig() {
@@ -202,6 +247,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         fabAddEvent = (FloatingActionButton) findViewById(R.id.fabAddEvent);
         fabAddEvent.setOnClickListener(this);
+    }
+
+    private void initGoogleApiClient() {
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
     }
 
     private void initTab() {
@@ -306,9 +361,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String eventTypeIndex = "0";
         String provinceIndex = "0";
         String regionIndex = "0";
-        double lat = 16.7;
-        double lng = 100.7;
-        String address = "Thanon Srisaman, Tambon Ban Mai, Amphoe Pak Kret, Chang Wat Nonthaburi 11120";
+        double lat = mCurrentLocation == null ? 16.7 : mCurrentLocation.getLatitude();
+        double lng = mCurrentLocation == null ? 100.7 : mCurrentLocation.getLongitude();
+//        String address = "Thanon Srisaman, Tambon Ban Mai, Amphoe Pak Kret, Chang Wat Nonthaburi 11120";
+        String address = GeocoderUtil.getAddress(this, lat, lng);
         String createdAt = TimeUtil.getCurrentTimeStamp();
         long createdAtLong = new Date().getTime();
         writeNewEvent(
@@ -326,10 +382,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 createdAt,
                 createdAtLong
         );
+        GeocoderUtil.getDistrict(this, lat, lng);
+        GeocoderUtil.getProvince(this, lat, lng);
+
+        Bundle bundle = new Bundle();
+        bundle.putString(Helper.DISTRICT, GeocoderUtil.getDistrict(this, lat, lng));
+        bundle.putString(Helper.PROVINCE, GeocoderUtil.getProvince(this, lat, lng));
+        mFirebaseAnalytics.logEvent(Helper.SUBMIT_EVENT, bundle);
     }
 
     private void writeNewEvent(String userUid, String userName, String userPhotoUrl, String title, String eventPhotoUrl, String eventTypeIndex, String provinceIndex, String regionIndex, double lat, double lng, String address, String createdAt, long createdAtLong) {
-        String key = mDatabase.child("events").push().getKey();
+        String key = mEventsRef.push().getKey();
         Event event = new Event();
         event.userUid = userUid;
         event.userName = userName;
@@ -348,9 +411,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/events/" + key, eventValues);
-        childUpdates.put("/user-events/" + userUid + "/" + key, eventValues);
+//        childUpdates.put("/user-events/" + userUid + "/" + key, eventValues);
 
-        mDatabase.updateChildren(childUpdates);
+        mDatabaseRoot.updateChildren(childUpdates);
+
+        mUserEventsRef.child(userUid).push().setValue(key);
     }
 
     protected void gotoLoginActivity() {
@@ -383,6 +448,73 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void hideProgressDialog() {
         mProgressDialog.dismiss();
+    }
+
+    private void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(2000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this
+        );
+        LoggerUtils.log2D("startLocationUpdates", "started");
+    }
+
+    void stopLocationUpdates() {
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(
+                    mGoogleApiClient, this);
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        LoggerUtils.log2D("GoogleApiClient", "onConnectionFailed");
+        FirebaseCrash.report(new Exception(connectionResult.getErrorMessage()));
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        LoggerUtils.log2D("GoogleApiClient", "onConnected");
+
+        startLocationUpdates();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        LoggerUtils.log2D("GoogleApiClient", "onConnectionSuspended");
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+//        LoggerUtils.log2I("onLocationChanged", location.toString());
+        mCurrentLocation = location;
+
+
+        MapFragment fragment = (MapFragment) mSectionsPagerAdapter.getItem(0);
+        if (fragment.isMapReady) {
+            fragment.onMyLocationChange(location);
+        }
     }
 
     /**
@@ -433,6 +565,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         String[] tabTitles = {"MAP", "LIST"};
 
+        MapFragment mapFragment;
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -441,7 +575,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            switch (position) {
+                case 0:
+                    if (mapFragment == null) {
+                        mapFragment = MapFragment.newInstance();
+                    }
+                    return mapFragment;
+                case 1:
+                    return PlaceholderFragment.newInstance(position + 1);
+                default:
+                    return PlaceholderFragment.newInstance(position + 1);
+            }
         }
 
         @Override
@@ -468,14 +612,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             LoggerUtils.log2D("ChildEventListener", "onChildAdded: " + dataSnapshot.getKey());
             Event event = dataSnapshot.getValue(Event.class);
-//            LoggerUtils.log2D("ChildEventListener", event.createdAt);
+            LoggerUtils.log2D("ChildEventListener", event.userName);
+            LoggerUtils.log2D("ChildEventListener", event.createdAt);
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
             LoggerUtils.log2D("ChildEventListener", "onChildChanged: " + dataSnapshot.getKey());
             Event event = dataSnapshot.getValue(Event.class);
-//            LoggerUtils.log2D("ChildEventListener", event.createdAt);
+            LoggerUtils.log2D("ChildEventListener", event.userName);
+            LoggerUtils.log2D("ChildEventListener", event.createdAt);
         }
 
         @Override

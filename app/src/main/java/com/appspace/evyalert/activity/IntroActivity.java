@@ -1,11 +1,15 @@
 package com.appspace.evyalert.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -31,7 +35,6 @@ public class IntroActivity extends AppCompatActivity {
 
         initInstances();
         checkPermission();
-        checkLogin();
     }
 
     @Override
@@ -65,8 +68,31 @@ public class IntroActivity extends AppCompatActivity {
         container = (CoordinatorLayout) findViewById(R.id.container);
     }
 
-    private void checkPermission() {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case Helper.REQUEST_ACCESS_FINE_LOCATION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted
+                    checkPermission();
+                }
+                return;
 
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void checkPermission() {
+// check android.permission.ACCESS_FINE_LOCATION permission
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            checkLogin();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    Helper.REQUEST_ACCESS_FINE_LOCATION);
+        }
     }
 
     private void checkLogin() {
