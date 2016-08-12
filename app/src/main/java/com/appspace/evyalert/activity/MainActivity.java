@@ -38,9 +38,12 @@ import com.appspace.evyalert.BuildConfig;
 import com.appspace.evyalert.R;
 import com.appspace.evyalert.fragment.EventListFragment;
 import com.appspace.evyalert.fragment.MapFragment;
+import com.appspace.evyalert.manager.ApiManager;
+import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.util.ChromeCustomTabUtil;
 import com.appspace.evyalert.util.GeocoderUtil;
 import com.appspace.evyalert.util.Helper;
+import com.appspace.evyalert.util.TimeUtil;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -59,6 +62,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements
         View.OnClickListener,
@@ -330,8 +336,6 @@ public class MainActivity extends AppCompatActivity implements
             String url = mFirebaseRemoteConfig.getString(ABOUT_URL_CONFIG_KEY);
             ChromeCustomTabUtil.open(this, url);
         } else if (view == fabAddEvent) {
-            Snackbar.make(fabAddEvent, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .show();
             addEvent();
         }
     }
@@ -345,17 +349,52 @@ public class MainActivity extends AppCompatActivity implements
         String eventTypeIndex = "0";
         String provinceIndex = "0";
         String regionIndex = "0";
-        double lat = mCurrentLocation == null ? 16.7 : mCurrentLocation.getLatitude();
-        double lng = mCurrentLocation == null ? 100.7 : mCurrentLocation.getLongitude();
+        final double lat = mCurrentLocation == null ? 16.7 : mCurrentLocation.getLatitude();
+        final double lng = mCurrentLocation == null ? 100.7 : mCurrentLocation.getLongitude();
 //        String address = "Thanon Srisaman, Tambon Ban Mai, Amphoe Pak Kret, Chang Wat Nonthaburi 11120";
 
         GeocoderUtil.getDistrict(this, lat, lng);
         GeocoderUtil.getProvince(this, lat, lng);
 
-        Bundle bundle = new Bundle();
-        bundle.putString(Helper.DISTRICT, GeocoderUtil.getDistrict(this, lat, lng));
-        bundle.putString(Helper.PROVINCE, GeocoderUtil.getProvince(this, lat, lng));
-        mFirebaseAnalytics.logEvent(Helper.SUBMIT_EVENT, bundle);
+        Call<Event> call = ApiManager.getInstance().getAPIService()
+                .postEvent(
+                        userUid,
+                        userName,
+                        userPhotoUrl,
+                        title,
+                        eventPhotoUrl,
+                        eventTypeIndex,
+                        provinceIndex,
+                        regionIndex,
+                        String.valueOf(lat),
+                        String.valueOf(lng),
+                        GeocoderUtil.getAddress(this, lat, lng),
+                        String.valueOf(TimeUtil.getCurrentTime())
+                );
+        call.enqueue(new Callback<Event>() {
+            @Override
+            public void onResponse(Call<Event> call, Response<Event> response) {
+                Event event = response.body();
+                LoggerUtils.log2D("api", "postEvent OK: " + response.message());
+                LoggerUtils.log2D("api", "postEvent OK: " + event.createdAt);
+
+                Bundle bundle = new Bundle();
+                bundle.putString(Helper.DISTRICT, GeocoderUtil.getDistrict(MainActivity.this, lat, lng));
+                bundle.putString(Helper.PROVINCE, GeocoderUtil.getProvince(MainActivity.this, lat, lng));
+                mFirebaseAnalytics.logEvent(Helper.SUBMIT_EVENT, bundle);
+
+
+                Snackbar.make(fabAddEvent, "Add event OK", Snackbar.LENGTH_LONG)
+                        .show();
+            }
+
+            @Override
+            public void onFailure(Call<Event> call, Throwable t) {
+                FirebaseCrash.report(t);
+                LoggerUtils.log2D("api", "postEvent onFailure: " + t.getMessage());
+            }
+        });
+
     }
 
     protected void gotoLoginActivity() {

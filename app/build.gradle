@@ -23,8 +23,8 @@ android {
         applicationId "com.appspace.evyalert"
         minSdkVersion 17
         targetSdkVersion 24
-        versionCode 44
-        versionName "1.7.3"
+        versionCode 48
+        versionName "1.8.1"
     }
     buildTypes {
         release {
@@ -60,7 +60,8 @@ dependencies {
     compile 'com.google.firebase:firebase-storage:9.4.0'
     compile 'com.google.android.gms:play-services-location:9.4.0'
     compile 'com.google.android.gms:play-services-maps:9.4.0'
-    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.afollestad.material-dialogs:commons:0.8.6.2'
     compile 'com.github.bumptech.glide:glide:3.7.0'
