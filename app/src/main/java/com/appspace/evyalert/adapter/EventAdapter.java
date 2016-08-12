@@ -24,6 +24,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public interface OnEventItemClickCallback {
         void onEventItemClickCallback(Event event, int position);
+
         void onEventItemPhotoClickCallback(Event event, int position);
     }
 
@@ -65,6 +66,6 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return 0;
+        return eventList == null ? 0 : eventList.size();
     }
 }

@@ -111,6 +111,9 @@ public class MainActivity extends AppCompatActivity implements
 
     MaterialDialog mProgressDialog;
 
+    boolean wasFirstLocationFig = false;
+    boolean isAceptableAcculacy = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -260,8 +263,8 @@ public class MainActivity extends AppCompatActivity implements
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-        tabLayout.getTabAt(0).setIcon(mSectionsPagerAdapter.imageResId[0]);
-        tabLayout.getTabAt(1).setIcon(mSectionsPagerAdapter.imageResId[1]);
+//        tabLayout.getTabAt(0).setIcon(mSectionsPagerAdapter.imageResId[0]);
+//        tabLayout.getTabAt(1).setIcon(mSectionsPagerAdapter.imageResId[1]);
     }
 
     @Override
@@ -482,11 +485,66 @@ public class MainActivity extends AppCompatActivity implements
 //        LoggerUtils.log2I("onLocationChanged", location.toString());
         mCurrentLocation = location;
 
+        if (location.hasAccuracy()
+                && location.getAccuracy() < 50 && location.getAccuracy() != 0.0) {
+            isAceptableAcculacy = true;
+        }
+
+        if (isAceptableAcculacy && !wasFirstLocationFig) {
+            wasFirstLocationFig = true;
+            loadEvent(0);
+        }
 
         MapFragment fragment = (MapFragment) mSectionsPagerAdapter.getItem(0);
         if (fragment.isMapReady) {
             fragment.onMyLocationChange(location);
         }
+    }
+
+    public void loadEvent(int option) {
+        switch (option) {
+            case 0:
+                loadEventNearBy(option);
+                break;
+            case 1:
+                loadEventNearBy(option);
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            case 7:
+                break;
+            default:
+        }
+    }
+
+    private void loadEventNearBy(int option) {
+        Call<Event[]> call = ApiManager.getInstance().getAPIService()
+                .loadEvents(
+                        String.valueOf(option),
+                        String.valueOf(mCurrentLocation.getLatitude()),
+                        String.valueOf(mCurrentLocation.getLongitude())
+                );
+        call.enqueue(new Callback<Event[]>() {
+            @Override
+            public void onResponse(Call<Event[]> call, Response<Event[]> response) {
+                Event[] events = response.body();
+                EventListFragment fragment = (EventListFragment) mSectionsPagerAdapter.getItem(1);
+                fragment.loadDataToRecyclerView(events);
+            }
+
+            @Override
+            public void onFailure(Call<Event[]> call, Throwable t) {
+                FirebaseCrash.report(t);
+            }
+        });
     }
 
     public static class PlaceholderFragment extends Fragment {

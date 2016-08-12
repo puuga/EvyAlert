@@ -8,6 +8,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 /**
  * Created by siwaweswongcharoen on 6/6/2016 AD.
@@ -32,5 +33,12 @@ public interface APIService {
             @Field("lng") String lng,
             @Field("address") String address,
             @Field("created_at_long") String createdAtLong
+    );
+
+    @GET("service_events.php")
+    Call<Event[]> loadEvents(
+            @Query("filter") String filterOption,
+            @Query("lat") String lat,
+            @Query("lng") String lng
     );
 }

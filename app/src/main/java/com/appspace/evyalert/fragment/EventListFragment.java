@@ -14,7 +14,6 @@ import com.appspace.evyalert.R;
 import com.appspace.evyalert.activity.MainActivity;
 import com.appspace.evyalert.adapter.EventAdapter;
 import com.appspace.evyalert.model.Event;
-import com.appspace.evyalert.util.TimeUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,42 +71,7 @@ public class EventListFragment extends Fragment implements EventAdapter.OnEventI
 
     }
 
-    public void loadEvent(int option) {
-        switch (option) {
-            case 0:
-                loadEventNearBy(20);
-                break;
-            case 1:
-                loadEventNearBy(50);
-                break;
-            case 2:
-                loadEventLast2Days();
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            default:
-        }
-    }
-
-    private void loadEventNearBy(int range) {
-    }
-
-    private void loadEventLast2Days() {
-        Long now = TimeUtil.getCurrentTime();
-        Long last2Day = TimeUtil.getLast2DaysTime();
-        LoggerUtils.log2D("loadEventLast2Days", "now: " + now);
-        LoggerUtils.log2D("loadEventLast2Days", "last2Day: " + last2Day);
-    }
-
-    private void loadDataToRecyclerView(Event[] events) {
+    public void loadDataToRecyclerView(Event[] events) {
         eventList.clear();
         LoggerUtils.log2D("api", "loadDataToRecyclerView:OK - " + eventList.size());
         eventList.addAll(Arrays.asList(events));
