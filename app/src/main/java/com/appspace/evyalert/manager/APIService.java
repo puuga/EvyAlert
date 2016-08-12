@@ -41,4 +41,9 @@ public interface APIService {
             @Query("lat") String lat,
             @Query("lng") String lng
     );
+
+    @GET("service_events.php")
+    Call<Event[]> loadEventsLast2Days(
+            @Query("filter") String filterOption
+    );
 }

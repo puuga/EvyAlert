@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -89,9 +90,6 @@ public class MainActivity extends AppCompatActivity implements
     LocationRequest mLocationRequest;
     Location mCurrentLocation;
 
-    // Remote Config keys
-    private static final String ABOUT_URL_CONFIG_KEY = "about_url";
-
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle actionBarDrawerToggle;
     Toolbar toolbar;
@@ -105,7 +103,14 @@ public class MainActivity extends AppCompatActivity implements
     MaterialDialog mProgressDialog;
 
     boolean wasFirstLocationFig = false;
-    boolean isAceptableAcculacy = false;
+    boolean wasFirstTimeGetLocation = false;
+    boolean isFirstTimeGetAcceptableAccuracy = false;
+    boolean isAcceptableAccuracy = false;
+    boolean isFirstTimeLoadEvent = false;
+    float mAcceptableAccuracy;
+    int mCurrentFilterOption = 0;
+
+    Location mFirstTimeLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void initInstances() {
-
+        mAcceptableAccuracy = (float) mFirebaseRemoteConfig.getDouble(Helper.ACCEPTABLE_ACCURACY_CONFIG_KEY);
 
         btnProfile = (Button) findViewById(R.id.btnProfile);
         btnProfile.setOnClickListener(this);
@@ -275,7 +280,26 @@ public class MainActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.actionFilters) {
+            new MaterialDialog.Builder(this)
+                    .title(R.string.filter_events)
+                    .items(R.array.scope)
+                    .itemsCallback(new MaterialDialog.ListCallback() {
+                        @Override
+                        public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                            LoggerUtils.log2D(TAG, "select: " + which + ", " + text);
+                            if (mCurrentFilterOption != which) {
+                                mCurrentFilterOption = which;
+                                loadEvent(mCurrentFilterOption);
+                                isFirstTimeLoadEvent = true;
+                            }
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString(Helper.FILTER_OPTION, String.valueOf(text));
+                            mFirebaseAnalytics.logEvent(Helper.SELECT_FILTER_OPTION_EVENT, bundle);
+                        }
+                    })
+                    .show();
             return true;
         }
 
@@ -329,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements
         if (view == btnProfile) {
             gotoLoginActivity();
         } else if (view == btnAbout) {
-            String url = mFirebaseRemoteConfig.getString(ABOUT_URL_CONFIG_KEY);
+            String url = mFirebaseRemoteConfig.getString(Helper.ABOUT_URL_CONFIG_KEY);
             ChromeCustomTabUtil.open(this, url);
         } else if (view == fabAddEvent) {
             addEvent();
@@ -478,14 +502,36 @@ public class MainActivity extends AppCompatActivity implements
 //        LoggerUtils.log2I("onLocationChanged", location.toString());
         mCurrentLocation = location;
 
-        if (location.hasAccuracy()
-                && location.getAccuracy() < 50 && location.getAccuracy() != 0.0) {
-            isAceptableAcculacy = true;
+        if (!wasFirstTimeGetLocation) {
+            mFirstTimeLocation = location;
+            wasFirstTimeGetLocation = true;
         }
 
-        if (isAceptableAcculacy && !wasFirstLocationFig) {
+        if (location.hasAccuracy()
+                && location.getAccuracy() < mAcceptableAccuracy && location.getAccuracy() != 0.0) {
+            isAcceptableAccuracy = true;
+        }
+
+        if (isAcceptableAccuracy && !wasFirstLocationFig) {
             wasFirstLocationFig = true;
-            loadEvent(0);
+            isFirstTimeGetAcceptableAccuracy = true;
+
+            if (!isFirstTimeLoadEvent) {
+                loadEvent(0);
+                isFirstTimeLoadEvent = true;
+            }
+
+            long timeBetweenGetFirstLocation = mCurrentLocation.getTime() - mFirstTimeLocation.getTime();
+            Bundle bundle = new Bundle();
+            bundle.putString(Helper.MODEL, Build.MODEL);
+            bundle.putString(Helper.BRAND, Build.BRAND);
+            bundle.putString(Helper.OS_VERSION, Build.VERSION.CODENAME);
+            bundle.putString(Helper.MANUFACTURER, Build.MANUFACTURER);
+            bundle.putDouble(
+                    Helper.ACCEPTABLE_ACCURACY,
+                    mFirebaseRemoteConfig.getDouble(Helper.ACCEPTABLE_ACCURACY_CONFIG_KEY));
+            bundle.putLong(Helper.DURATION, timeBetweenGetFirstLocation);
+            mFirebaseAnalytics.logEvent(Helper.DURATION_ACCEPTABLE_ACCURACY_EVENT, bundle);
         }
 
         MapFragment fragment = (MapFragment) mSectionsPagerAdapter.getItem(0);
@@ -495,39 +541,43 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void loadEvent(int option) {
+        showProgressDialog();
         switch (option) {
             case 0:
-                loadEventNearBy(option);
+                loadEventsNearBy(option);
                 break;
             case 1:
-                loadEventNearBy(option);
+                loadEventsNearBy(option);
                 break;
             case 2:
+                loadEventsLast2Days(option);
                 break;
             case 3:
+                hideProgressDialog();
                 break;
             case 4:
+                hideProgressDialog();
                 break;
             case 5:
+                hideProgressDialog();
                 break;
             case 6:
+                hideProgressDialog();
                 break;
             case 7:
+                hideProgressDialog();
                 break;
             default:
         }
     }
 
-    private void loadEventNearBy(int option) {
+    private void loadEventsLast2Days(int option) {
         Call<Event[]> call = ApiManager.getInstance().getAPIService()
-                .loadEvents(
-                        String.valueOf(option),
-                        String.valueOf(mCurrentLocation.getLatitude()),
-                        String.valueOf(mCurrentLocation.getLongitude())
-                );
+                .loadEventsLast2Days(String.valueOf(option));
         call.enqueue(new Callback<Event[]>() {
             @Override
             public void onResponse(Call<Event[]> call, Response<Event[]> response) {
+                hideProgressDialog();
                 Event[] events = response.body();
 
                 EventListFragment eventListFragment = (EventListFragment) mSectionsPagerAdapter.getItem(1);
@@ -539,6 +589,35 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onFailure(Call<Event[]> call, Throwable t) {
+                hideProgressDialog();
+                FirebaseCrash.report(t);
+            }
+        });
+    }
+
+    private void loadEventsNearBy(int option) {
+        Call<Event[]> call = ApiManager.getInstance().getAPIService()
+                .loadEvents(
+                        String.valueOf(option),
+                        String.valueOf(mCurrentLocation.getLatitude()),
+                        String.valueOf(mCurrentLocation.getLongitude())
+                );
+        call.enqueue(new Callback<Event[]>() {
+            @Override
+            public void onResponse(Call<Event[]> call, Response<Event[]> response) {
+                hideProgressDialog();
+                Event[] events = response.body();
+
+                EventListFragment eventListFragment = (EventListFragment) mSectionsPagerAdapter.getItem(1);
+                eventListFragment.loadDataToRecyclerView(events);
+
+                MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(0);
+                mapFragment.createMarker(events);
+            }
+
+            @Override
+            public void onFailure(Call<Event[]> call, Throwable t) {
+                hideProgressDialog();
                 FirebaseCrash.report(t);
             }
         });

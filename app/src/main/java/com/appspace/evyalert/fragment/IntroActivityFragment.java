@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.appspace.evyalert.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -19,6 +22,11 @@ public class IntroActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_intro, container, false);
+        View view = inflater.inflate(R.layout.fragment_intro, container, false);
+        initInstances(view);
+        return view;
+    }
+
+    private void initInstances(View view) {
     }
 }

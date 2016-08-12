@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -17,12 +18,17 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.appspace.appspacelibrary.util.InternetUtil;
 import com.appspace.appspacelibrary.util.LoggerUtils;
+import com.appspace.evyalert.BuildConfig;
 import com.appspace.evyalert.R;
 import com.appspace.evyalert.util.FirebaseUserUtil;
 import com.appspace.evyalert.util.Helper;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 public class IntroActivity extends AppCompatActivity {
 
@@ -30,12 +36,18 @@ public class IntroActivity extends AppCompatActivity {
 
     CoordinatorLayout container;
 
+    private FirebaseRemoteConfig mFirebaseRemoteConfig;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
 
         initInstances();
+
+        initAdMob();
+
+        initFirebase();
 
         checkInternet();
     }
@@ -93,6 +105,20 @@ public class IntroActivity extends AppCompatActivity {
         container = (CoordinatorLayout) findViewById(R.id.container);
     }
 
+    private void initAdMob() {
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-6174292774814788~4101189953");
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("3EC1EF88FD766483AA48DEDC3AAC8A18")
+                .build();
+        mAdView.loadAd(adRequest);
+    }
+
+    private void initFirebase() {
+        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -142,9 +168,16 @@ public class IntroActivity extends AppCompatActivity {
     }
 
     protected void gotoMainActivity() {
-        Intent i = new Intent(this, MainActivity.class);
-        startActivity(i);
-        finish();
+        LoggerUtils.log2D(TAG, BuildConfig.BUILD_TYPE);
+        Handler handler = new Handler();
+        long delay = BuildConfig.DEBUG ? 500 : mFirebaseRemoteConfig.getLong(Helper.INTRO_DELAY);
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                Intent i = new Intent(IntroActivity.this, MainActivity.class);
+                startActivity(i);
+                finish();
+            }
+        }, delay);
     }
 
 }

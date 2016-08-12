@@ -4,4 +4,12 @@
         <key>about_url</key>
         <value>http://www.google.com</value>
     </entry>
+    <entry>
+        <key>acceptable_accuracy</key>
+        <value>100.0</value>
+    </entry>
+    <entry>
+        <key>intro_delay</key>
+        <value>2000</value>
+    </entry>
 </defaultsMap>
