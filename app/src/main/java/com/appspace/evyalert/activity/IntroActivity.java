@@ -15,6 +15,8 @@ import android.util.Log;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.appspace.appspacelibrary.util.InternetUtil;
+import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.R;
 import com.appspace.evyalert.util.FirebaseUserUtil;
 import com.appspace.evyalert.util.Helper;
@@ -34,7 +36,8 @@ public class IntroActivity extends AppCompatActivity {
         setContentView(R.layout.activity_intro);
 
         initInstances();
-        checkPermission();
+
+        checkInternet();
     }
 
     @Override
@@ -62,6 +65,28 @@ public class IntroActivity extends AppCompatActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void checkInternet() {
+        if (!InternetUtil.isInternetAvailable(this)) {
+            LoggerUtils.log2D("internet", "no internet");
+
+            MaterialDialog dialog = new MaterialDialog.Builder(this)
+                    .title(R.string.no_internet)
+                    .content(R.string.no_internet_description)
+                    .positiveText(R.string.ok)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            finish();
+                        }
+                    })
+                    .autoDismiss(false)
+                    .show();
+        } else {
+            checkPermission();
+        }
+
     }
 
     private void initInstances() {

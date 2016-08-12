@@ -13,24 +13,23 @@ import android.view.ViewGroup;
 
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.R;
+import com.appspace.evyalert.model.Event;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MapFragment extends Fragment implements
         OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnCameraMoveListener,
-        GoogleMap.OnCameraIdleListener {
+        GoogleMap.OnCameraIdleListener,
+        GoogleMap.OnMarkerClickListener {
 
     public static final String TAG = "MapFragment";
 
@@ -41,6 +40,9 @@ public class MapFragment extends Fragment implements
     public boolean isMapReady = false;
     boolean wasFirstLocationFig = false;
     boolean isAceptableAcculacy = false;
+
+    Event[] events;
+    Marker[] markers;
 
     public MapFragment() {
         // Required empty public constructor
@@ -76,11 +78,14 @@ public class MapFragment extends Fragment implements
         isMapReady = true;
 
         initGoogleMap();
+
+        googleMap.setOnMarkerClickListener(this);
+        googleMap.setOnMapClickListener(this);
     }
 
     @Override
     public void onMapClick(LatLng latLng) {
-
+        LoggerUtils.log2D("onMapClick", latLng.toString());
     }
 
     @Override
@@ -137,6 +142,60 @@ public class MapFragment extends Fragment implements
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
             googleMap.animateCamera(cameraUpdate);
         }
+    }
 
+    public void moveCameraToLatLng(LatLng latLng) {
+        LoggerUtils.log2D("moveCamera", "moveCameraToLatLng");
+        wasFirstLocationFig = true;
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+        googleMap.animateCamera(cameraUpdate);
+    }
+
+    public void focusOnMarker(int index) {
+        if (googleMap == null) {
+            return;
+        }
+        if (index > markers.length - 1) {
+            return;
+        }
+
+        markers[index].showInfoWindow();
+        moveCameraToLatLng(markers[index].getPosition());
+    }
+
+    public void createMarker(Event[] events) {
+        if (googleMap == null) {
+            return;
+        }
+        this.events = events;
+
+        googleMap.clear();
+
+        markers = new Marker[events.length];
+
+        int markerCount = 0;
+
+        for (int i = 0; i < events.length; i++) {
+            Event event = events[i];
+
+            LatLng latLng = new LatLng(event.lat, event.lng);
+
+            Marker marker = googleMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title("@" + event.userName)
+                    .snippet(event.title));
+
+            marker.setTag(i);
+            markers[i] = marker;
+            markerCount++;
+        }
+        LoggerUtils.log2D("marker", "count: " + events.length + ", " + markerCount);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Event event = events[(int) marker.getTag()];
+        LoggerUtils.log2D("onMarkerClick", "event id: " + event.eventUid);
+        return false;
     }
 }

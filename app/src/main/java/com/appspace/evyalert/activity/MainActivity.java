@@ -36,6 +36,7 @@ import com.appspace.appspacelibrary.manager.Contextor;
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.BuildConfig;
 import com.appspace.evyalert.R;
+import com.appspace.evyalert.adapter.EventAdapter;
 import com.appspace.evyalert.fragment.EventListFragment;
 import com.appspace.evyalert.fragment.MapFragment;
 import com.appspace.evyalert.manager.ApiManager;
@@ -70,21 +71,13 @@ public class MainActivity extends AppCompatActivity implements
         View.OnClickListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,
+        EventAdapter.OnEventItemClickCallback {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+    private static final String TAG = "MainActivity";
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
 
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -536,8 +529,12 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onResponse(Call<Event[]> call, Response<Event[]> response) {
                 Event[] events = response.body();
-                EventListFragment fragment = (EventListFragment) mSectionsPagerAdapter.getItem(1);
-                fragment.loadDataToRecyclerView(events);
+
+                EventListFragment eventListFragment = (EventListFragment) mSectionsPagerAdapter.getItem(1);
+                eventListFragment.loadDataToRecyclerView(events);
+
+                MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(0);
+                mapFragment.createMarker(events);
             }
 
             @Override
@@ -545,6 +542,19 @@ public class MainActivity extends AppCompatActivity implements
                 FirebaseCrash.report(t);
             }
         });
+    }
+
+    @Override
+    public void onEventItemClickCallback(Event event, int position) {
+        LoggerUtils.log2D(TAG, "onEventItemClickCallback: " + position);
+        mViewPager.setCurrentItem(0, true);
+        MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(0);
+        mapFragment.focusOnMarker(position);
+    }
+
+    @Override
+    public void onEventItemPhotoClickCallback(Event event, int position) {
+
     }
 
     public static class PlaceholderFragment extends Fragment {

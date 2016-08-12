@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/ivProfile"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:src="@drawable/ic_user" />
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/ivProfile"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_toEndOf="@+id/ivProfile"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -31,6 +31,24 @@
         android:layout_alignStart="@id/tvUsername"
         android:layout_below="@id/tvUsername"
         android:layout_marginTop="8dp"
+        android:text="Small Text"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <ImageView
+        android:id="@+id/ivEventType"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignBottom="@+id/tvTimeStamp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/tvEventType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ivEventType"
+        android:layout_toStartOf="@+id/ivEventType"
         android:text="Small Text"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 </RelativeLayout>

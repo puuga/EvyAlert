@@ -22,11 +22,15 @@ import java.util.List;
 
 public class EventListFragment extends Fragment implements EventAdapter.OnEventItemClickCallback {
 
+    private static final String TAG = "EventListFragment";
+
     MainActivity mainActivity;
 
     Event[] events;
     RecyclerView recyclerView;
     List<Event> eventList;
+
+    private EventAdapter.OnEventItemClickCallback callback;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -53,6 +57,7 @@ public class EventListFragment extends Fragment implements EventAdapter.OnEventI
 
     private void initInstances(View view) {
         mainActivity = (MainActivity) getActivity();
+        callback = mainActivity;
 
         eventList = new ArrayList<>();
         EventAdapter adapter = new EventAdapter(mainActivity, eventList, this);
@@ -63,7 +68,8 @@ public class EventListFragment extends Fragment implements EventAdapter.OnEventI
 
     @Override
     public void onEventItemClickCallback(Event event, int position) {
-
+        LoggerUtils.log2D(TAG, "onEventItemClickCallback: " + position);
+        callback.onEventItemClickCallback(event, position);
     }
 
     @Override
