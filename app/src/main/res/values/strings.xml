@@ -4,7 +4,8 @@
     <string name="action_filters">Filters</string>
     <string name="facebook_app_id">892710704194179</string>
     <string name="fb_login_protocol_scheme" translatable="false">1166630520024561</string>
-    <string name="banner_ad_unit_id">ca-app-pub-6174292774814788/5577923159</string>
+    <string name="banner_ad_unit_id_event_list">ca-app-pub-6174292774814788/7068002756</string>
+    <string name="banner_ad_unit_id_intro">ca-app-pub-6174292774814788/5577923159</string>
     <string name="login_ok">Login OK</string>
     <string name="login_cancel">Login CANCEL</string>
     <string name="need_login">Need login</string>

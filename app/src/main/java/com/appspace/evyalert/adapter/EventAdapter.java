@@ -10,10 +10,13 @@ import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.R;
 import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.util.EventIconUtil;
+import com.appspace.evyalert.util.Helper;
+import com.appspace.evyalert.view.holder.AdmobHolder;
 import com.appspace.evyalert.view.holder.EventHolder;
 import com.appspace.evyalert.view.holder.EventWithImageHolder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.google.android.gms.ads.AdRequest;
 
 import java.util.List;
 
@@ -44,25 +47,40 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
+        if (position == 2) {
+            return Helper.HOLDER_TYPE_ADMOB; // no admob
+        } else if (position != 0 && (position % 10 == 0)) {
+            return Helper.HOLDER_TYPE_ADMOB; // no admob
+        }
+
         Event event = eventList.get(position);
         if (event.eventPhotoUrl.equals(""))
-            return 0; // no photo
+            return Helper.HOLDER_TYPE_NO_IMAGE; // no photo
         else
-            return 1; // has photo
+            return Helper.HOLDER_TYPE_IMAGE; // has photo
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
         switch (viewType) {
-            case 0:
+            case Helper.HOLDER_TYPE_NO_IMAGE:
                 itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.holder_event, parent, false);
                 return new EventHolder(itemView);
-            case 1:
+            case Helper.HOLDER_TYPE_IMAGE:
                 itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.holder_event_with_image, parent, false);
                 return new EventWithImageHolder(itemView);
+            case Helper.HOLDER_TYPE_ADMOB:
+                itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.holder_admob, parent, false);
+                AdmobHolder admobHolder = new AdmobHolder(itemView);
+                AdRequest adRequest = new AdRequest.Builder()
+                        .addTestDevice("3EC1EF88FD766483AA48DEDC3AAC8A18")
+                        .build();
+                admobHolder.mAdView.loadAd(adRequest);
+                return admobHolder;
         }
         return null;
     }
@@ -71,13 +89,13 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final Event event = eventList.get(position);
         switch (holder.getItemViewType()) {
-            case 0:
+            case Helper.HOLDER_TYPE_NO_IMAGE:
                 EventHolder holder0 = (EventHolder) holder;
                 setDataToHolder(holder0, event);
 
                 setOnEventItemClickCallback(holder0, event, holder.getAdapterPosition());
                 break;
-            case 1:
+            case Helper.HOLDER_TYPE_IMAGE:
                 EventWithImageHolder holder1 = (EventWithImageHolder) holder;
                 setDataToHolder(holder1, event);
                 setEventImageToHolder(holder1, event);
@@ -129,6 +147,11 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return eventList == null ? 0 : eventList.size();
+        if (eventList == null)
+            return 0;
+        else if (eventList.size() <= 2)
+            return eventList.size();
+        else
+            return eventList.size() + 1 + (eventList.size() / 10);
     }
 }
