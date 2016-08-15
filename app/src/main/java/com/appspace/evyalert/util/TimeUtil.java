@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public class TimeUtil {
     public static String getCurrentTimeStamp() {
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date now = new Date();
         return sdfDate.format(now);
     }
@@ -19,5 +19,11 @@ public class TimeUtil {
 
     public static long getLast2DaysTime() {
         return new Date().getTime() - 17280000;
+    }
+
+    public static String timpStampFormater(long time) {
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date(time);
+        return sdfDate.format(date);
     }
 }

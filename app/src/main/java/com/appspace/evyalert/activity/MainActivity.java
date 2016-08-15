@@ -403,9 +403,10 @@ public class MainActivity extends AppCompatActivity implements
                 bundle.putString(Helper.PROVINCE, GeocoderUtil.getProvince(MainActivity.this, lat, lng));
                 mFirebaseAnalytics.logEvent(Helper.SUBMIT_EVENT, bundle);
 
-
                 Snackbar.make(fabAddEvent, "Add event OK", Snackbar.LENGTH_LONG)
                         .show();
+
+                loadEvent(mCurrentFilterOption);
             }
 
             @Override

@@ -11,6 +11,7 @@ import com.appspace.evyalert.R;
 import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.util.EventIconUtil;
 import com.appspace.evyalert.util.Helper;
+import com.appspace.evyalert.util.TimeUtil;
 import com.appspace.evyalert.view.holder.AdmobHolder;
 import com.appspace.evyalert.view.holder.EventHolder;
 import com.appspace.evyalert.view.holder.EventWithImageHolder;
@@ -48,12 +49,21 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public int getItemViewType(int position) {
         if (position == 2) {
-            return Helper.HOLDER_TYPE_ADMOB; // no admob
+            return Helper.HOLDER_TYPE_ADMOB; // admob
         } else if (position != 0 && (position % 10 == 0)) {
-            return Helper.HOLDER_TYPE_ADMOB; // no admob
+            return Helper.HOLDER_TYPE_ADMOB; // admob
         }
 
-        Event event = eventList.get(position);
+        int listPosition;
+        if (position ==0)
+            listPosition = position;
+        else if (position <= 1)
+            listPosition = position;
+        else
+            listPosition =  position - 1 - (position / 10);
+
+        Event event = eventList.get(listPosition);
+
         if (event.eventPhotoUrl.equals(""))
             return Helper.HOLDER_TYPE_NO_IMAGE; // no photo
         else
@@ -87,20 +97,32 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        final Event event = eventList.get(position);
+        if (position!=0 && (position == 2 || position%10==0))
+            return;
+
+        int listPosition;
+        if (position ==0)
+            listPosition = position;
+        else if (position <= 1)
+            listPosition = position;
+        else
+            listPosition =  position - 1 - (position / 10);
+
+        final Event event = eventList.get(listPosition);
+
         switch (holder.getItemViewType()) {
             case Helper.HOLDER_TYPE_NO_IMAGE:
                 EventHolder holder0 = (EventHolder) holder;
                 setDataToHolder(holder0, event);
 
-                setOnEventItemClickCallback(holder0, event, holder.getAdapterPosition());
+                setOnEventItemClickCallback(holder0, event, listPosition);
                 break;
             case Helper.HOLDER_TYPE_IMAGE:
                 EventWithImageHolder holder1 = (EventWithImageHolder) holder;
                 setDataToHolder(holder1, event);
                 setEventImageToHolder(holder1, event);
 
-                setOnEventItemClickCallback(holder1, event, holder.getAdapterPosition());
+                setOnEventItemClickCallback(holder1, event, listPosition);
                 break;
         }
     }
@@ -114,7 +136,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         holder.tvUsername.setText(event.userName);
 
-        holder.tvTimeStamp.setText(event.createdAt);
+        holder.tvTimeStamp.setText(TimeUtil.timpStampFormater(event.createdAtLong));
 
         String eventText = context.getResources()
                 .getStringArray(R.array.event_type)[Integer.parseInt(event.eventTypeIndex)];
