@@ -344,6 +344,18 @@ public class MainActivity extends AppCompatActivity implements
                     loadProfileData();
                 }
             }
+        } else if (requestCode == Helper.POST_EVENT_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                LoggerUtils.log2D(TAG, "POST_MESSAGE_REQUEST - OK");
+                Event event = data.getParcelableExtra(Helper.MODEL_EVENT_KEY);
+                Snackbar.make(fabAddEvent, "Event posted", Snackbar.LENGTH_SHORT)
+                        .show();
+                loadEvent(mCurrentFilterOption);
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                LoggerUtils.log2D(TAG, "POST_MESSAGE_REQUEST - CANCELED");
+                Snackbar.make(fabAddEvent, "CANCELED", Snackbar.LENGTH_SHORT)
+                        .show();
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -356,7 +368,8 @@ public class MainActivity extends AppCompatActivity implements
             String url = mFirebaseRemoteConfig.getString(Helper.ABOUT_URL_CONFIG_KEY);
             ChromeCustomTabUtil.open(this, url);
         } else if (view == fabAddEvent) {
-            addEvent();
+//            addEvent();
+            openPostEventActivity();
         }
     }
 
@@ -421,6 +434,12 @@ public class MainActivity extends AppCompatActivity implements
     protected void gotoLoginActivity() {
         Intent i = new Intent(this, LoginActivity.class);
         startActivityForResult(i, Helper.LOGIN_RESUEST_CODE);
+    }
+
+    private void openPostEventActivity() {
+        Intent i = new Intent(this, PostEventActivity.class);
+//        LoggerUtils.log2D("ProfileLogedinFragment", "openPostMessageActivity");
+        startActivityForResult(i, Helper.POST_EVENT_REQUEST_CODE);
     }
 
     private void loadProfileData() {

@@ -1,11 +1,14 @@
 package com.appspace.evyalert.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by siwaweswongcharoen on 8/10/2016 AD.
  */
-public class Event {
+public class Event implements Parcelable{
     @SerializedName("id") public String eventUid;
     @SerializedName("user_uid") public String userUid;
     @SerializedName("user_name") public String userName;
@@ -25,4 +28,58 @@ public class Event {
     public Event() {
 
     }
+
+    protected Event(Parcel in) {
+        eventUid = in.readString();
+        userUid = in.readString();
+        userName = in.readString();
+        userPhotoUrl = in.readString();
+        title = in.readString();
+        eventPhotoUrl = in.readString();
+        eventTypeIndex = in.readString();
+        provinceIndex = in.readString();
+        regionIndex = in.readString();
+        lat = in.readDouble();
+        lng = in.readDouble();
+        address = in.readString();
+        createdAtLong = in.readLong();
+        createdAt = in.readString();
+        updatedAt = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(eventUid);
+        dest.writeString(userUid);
+        dest.writeString(userName);
+        dest.writeString(userPhotoUrl);
+        dest.writeString(title);
+        dest.writeString(eventPhotoUrl);
+        dest.writeString(eventTypeIndex);
+        dest.writeString(provinceIndex);
+        dest.writeString(regionIndex);
+        dest.writeDouble(lat);
+        dest.writeDouble(lng);
+        dest.writeString(address);
+        dest.writeLong(createdAtLong);
+        dest.writeString(createdAt);
+        dest.writeString(updatedAt);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
 }

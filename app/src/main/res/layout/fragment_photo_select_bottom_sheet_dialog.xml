@@ -1,0 +1,44 @@
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:clipToPadding="true"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="8dp"
+        android:paddingBottom="32dp">
+
+        <Button
+            android:id="@+id/btnImageFromCamera"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/ic_photo_camera_grey_500_36dp"
+            android:gravity="start|center_vertical"
+            android:text="@string/image_from_camera"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnImageFromGallery"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/ic_image_grey_500_36dp"
+            android:gravity="start|center_vertical"
+            android:text="@string/image_from_gallery"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

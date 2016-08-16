@@ -5,4 +5,5 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="drawer_menu_width">240dp</dimen>
+    <dimen name="icon_size_post">32dp</dimen>
 </resources>

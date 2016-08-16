@@ -35,7 +35,7 @@ public class GeocoderUtil {
 //                LoggerUtils.log2I("address", "getPostalCode(): " + address.getPostalCode());
 //                LoggerUtils.log2I("address", "getCountryName(): " + address.getCountryName());
             }
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             FirebaseCrash.report(e);
             Crashlytics.logException(e);
         }
@@ -62,7 +62,7 @@ public class GeocoderUtil {
 //                LoggerUtils.log2I("address", "getPostalCode(): " + address.getPostalCode());
 //                LoggerUtils.log2I("address", "getCountryName(): " + address.getCountryName());
             }
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             FirebaseCrash.report(e);
             Crashlytics.logException(e);
         }
@@ -89,7 +89,7 @@ public class GeocoderUtil {
 //                LoggerUtils.log2I("address", "getPostalCode(): " + address.getPostalCode());
 //                LoggerUtils.log2I("address", "getCountryName(): " + address.getCountryName());
             }
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             FirebaseCrash.report(e);
             Crashlytics.logException(e);
         }
