@@ -25,8 +25,11 @@ public class PostEventActivityFragment extends Fragment implements
     public ToggleButton toggleAccident;
     public ToggleButton toggleNaturalDisaster;
     public ToggleButton toggleOther;
+    public ToggleButton toggleTrafficJam;
     public TextInputEditText edtEventTitle;
     public ImageView ivEventImage;
+
+    public int eventTypeIndex = -1;
 
     public PostEventActivityFragment() {
     }
@@ -43,6 +46,7 @@ public class PostEventActivityFragment extends Fragment implements
         toggleAccident = (ToggleButton) view.findViewById(R.id.toggleAccident);
         toggleNaturalDisaster = (ToggleButton) view.findViewById(R.id.toggleNaturalDisaster);
         toggleOther = (ToggleButton) view.findViewById(R.id.toggleOther);
+        toggleTrafficJam = (ToggleButton) view.findViewById(R.id.toggleTrafficJam);
         edtEventTitle = (TextInputEditText) view.findViewById(R.id.edtEventTitle);
         ivEventImage = (ImageView) view.findViewById(R.id.ivEventImage);
 
@@ -50,6 +54,7 @@ public class PostEventActivityFragment extends Fragment implements
         toggleAccident.setOnCheckedChangeListener(this);
         toggleNaturalDisaster.setOnCheckedChangeListener(this);
         toggleOther.setOnCheckedChangeListener(this);
+        toggleTrafficJam.setOnCheckedChangeListener(this);
     }
 
     public void checkEditMode() {
@@ -79,14 +84,29 @@ public class PostEventActivityFragment extends Fragment implements
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         if (compoundButton == toggleAccident && b) {
+            eventTypeIndex = 0;
+
             toggleNaturalDisaster.setChecked(false);
             toggleOther.setChecked(false);
+            toggleTrafficJam.setChecked(false);
         } else if (compoundButton == toggleNaturalDisaster && b) {
+            eventTypeIndex = 1;
+
             toggleAccident.setChecked(false);
             toggleOther.setChecked(false);
+            toggleTrafficJam.setChecked(false);
         } else if (compoundButton == toggleOther && b) {
+            eventTypeIndex = 2;
+
             toggleAccident.setChecked(false);
             toggleNaturalDisaster.setChecked(false);
+            toggleTrafficJam.setChecked(false);
+        } else if (compoundButton == toggleTrafficJam) {
+            eventTypeIndex = 3;
+
+            toggleAccident.setChecked(false);
+            toggleNaturalDisaster.setChecked(false);
+            toggleOther.setChecked(false);
         }
     }
 }

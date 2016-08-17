@@ -167,15 +167,16 @@ public class PostEventActivity extends AppCompatActivity
         final String title = fragment.edtEventTitle.getText().toString();
 
         // check data from ui
-        if (!fragment.toggleAccident.isChecked()
-                && !fragment.toggleNaturalDisaster.isChecked()
-                && !fragment.toggleOther.isChecked()) {
+        if (fragment.eventTypeIndex == -1) {
             mProgressDialog.dismiss();
 
             Snackbar.make(container, R.string.must_select_at_last_1_type, Snackbar.LENGTH_LONG)
                     .show();
             return;
         }
+
+
+        final String eventTypeIndex = String.valueOf(fragment.eventTypeIndex);
 
         // read file if select to resize and upload resized file to firebase
         if (mCurrentUri != null) {
@@ -241,21 +242,20 @@ public class PostEventActivity extends AppCompatActivity
                             String url = "https://firebasestorage.googleapis.com" + downloadUrl.getEncodedPath() + "?alt=media";
                             LoggerUtils.log2D("upload_firebase", "Uploaded at: " + url);
 
-                            doPostEvent(title, url);
+                            doPostEvent(title, url, eventTypeIndex);
                         }
                     });
         } else {
-            doPostEvent(title, "");
+            doPostEvent(title, "", eventTypeIndex);
         }
     }
 
-    private void doPostEvent(String title, final String eventPhotoUrl) {
+    private void doPostEvent(String title, final String eventPhotoUrl, String eventTypeIndex) {
         if (title.equals(""))
             title = getString(R.string.default_event_title);
         String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
         String userPhotoUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
-        String eventTypeIndex = "0";
         String provinceIndex = "0";
         String regionIndex = "0";
         final double lat = latitude;

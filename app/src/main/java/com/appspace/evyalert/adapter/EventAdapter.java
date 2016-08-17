@@ -2,6 +2,7 @@ package com.appspace.evyalert.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,6 @@ import com.appspace.evyalert.R;
 import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.util.EventIconUtil;
 import com.appspace.evyalert.util.Helper;
-import com.appspace.evyalert.util.TimeUtil;
 import com.appspace.evyalert.view.holder.AdmobHolder;
 import com.appspace.evyalert.view.holder.EventHolder;
 import com.appspace.evyalert.view.holder.EventWithImageHolder;
@@ -136,7 +136,9 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         holder.tvUsername.setText(event.userName);
 
-        holder.tvTimeStamp.setText(TimeUtil.timpStampFormater(event.createdAtLong));
+//        holder.tvTimeStamp.setText(TimeUtil.timpStampFormater(event.createdAtLong));
+        String timeStamp = String.valueOf(DateUtils.getRelativeTimeSpanString(event.createdAtLong));
+        holder.tvTimeStamp.setText(timeStamp);
 
         String eventText = context.getResources()
                 .getStringArray(R.array.event_type)[Integer.parseInt(event.eventTypeIndex)];

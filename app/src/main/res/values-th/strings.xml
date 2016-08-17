@@ -9,7 +9,7 @@
     <string name="default_event_title">มีบางอย่างที่นี่ โปรดระวัง</string>
     <string name="event_accident">อุบัติเหตุ</string>
     <string name="event_natural_disaster">ภัยธรรมชาติ</string>
-    <string name="event_other">อื่น</string>
+    <string name="event_other">อื่นๆ</string>
     <string name="filter_events">กรอง</string>
     <string name="image_from_camera">กล้อง</string>
     <string name="image_from_gallery">คลังภาพ</string>
@@ -26,4 +26,5 @@
     <string name="around_me_20">รอบตัว ในระยะ 20 กิโลเมตร</string>
     <string name="around_me_50">รอบตัว ในระยะ 50 กิโลเมตร</string>
     <string name="last_2_day">2 วันที่ผ่านมา</string>
+    <string name="event_traffic_jam">รถติด</string>
 </resources>

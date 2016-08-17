@@ -141,11 +141,13 @@
     <string name="event_accident">Accident</string>
     <string name="event_natural_disaster">Natural Disaster</string>
     <string name="event_other">Other</string>
+    <string name="event_traffic_jam">Traffic Jam</string>
 
     <string-array name="event_type">
         <item>@string/event_accident</item>
         <item>@string/event_natural_disaster</item>
         <item>@string/event_other</item>
+        <item>@string/event_traffic_jam</item>
     </string-array>
 
     <string name="title_activity_login">Login</string>

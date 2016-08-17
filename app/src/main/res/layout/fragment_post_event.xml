@@ -54,6 +54,17 @@
                 android:textOn="@string/event_other"
                 android:textColor="@color/toggle_text_color"
                 android:drawableTop="@drawable/toggle_ic_other" />
+
+            <ToggleButton
+                android:id="@+id/toggleTrafficJam"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="?android:attr/borderlessButtonStyle"
+                android:textOff="@string/event_traffic_jam"
+                android:textOn="@string/event_traffic_jam"
+                android:textColor="@color/toggle_text_color"
+                android:drawableTop="@drawable/toggle_ic_traffic_jam" />
         </LinearLayout>
 
         <ImageView
