@@ -15,44 +15,52 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin">
 
-        <RadioGroup
-            android:id="@+id/radioGroup"
+        <LinearLayout
+            android:id="@+id/toggleGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:gravity="center"
             android:orientation="horizontal">
 
-            <RadioButton
-                android:id="@+id/radioAccident"
+            <ToggleButton
+                android:id="@+id/toggleAccident"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/event_accident"
-                android:button="@drawable/ic_accident_grey_800_48dp" />
+                style="?android:attr/borderlessButtonStyle"
+                android:textOff="@string/event_accident"
+                android:textOn="@string/event_accident"
+                android:textColor="@color/toggle_text_color"
+                android:drawableTop="@drawable/toggle_ic_accident" />
 
-            <RadioButton
-                android:id="@+id/radioNaturalDisaster"
+            <ToggleButton
+                android:id="@+id/toggleNaturalDisaster"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/event_natural_disaster"
-                android:button="@drawable/ic_natural_disaster_grey_800_48dp" />
+                style="?android:attr/borderlessButtonStyle"
+                android:textOff="@string/event_natural_disaster"
+                android:textOn="@string/event_natural_disaster"
+                android:textColor="@color/toggle_text_color"
+                android:drawableTop="@drawable/toggle_ic_natural_disaster" />
 
-            <RadioButton
-                android:id="@+id/radioOther"
+            <ToggleButton
+                android:id="@+id/toggleOther"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/event_other"
-                android:button="@drawable/ic_other_grey_800_48dp" />
-        </RadioGroup>
+                style="?android:attr/borderlessButtonStyle"
+                android:textOff="@string/event_other"
+                android:textOn="@string/event_other"
+                android:textColor="@color/toggle_text_color"
+                android:drawableTop="@drawable/toggle_ic_other" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/ivIcEventTitle"
             android:layout_width="@dimen/icon_size_post"
             android:layout_height="@dimen/icon_size_post"
-            android:layout_below="@id/radioGroup"
+            android:layout_below="@id/toggleGroup"
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_label_grey_500_36dp" />
 

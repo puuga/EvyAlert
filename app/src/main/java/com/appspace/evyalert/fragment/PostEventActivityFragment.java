@@ -6,8 +6,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.RadioButton;
+import android.widget.ToggleButton;
 
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.R;
@@ -18,11 +19,12 @@ import com.bumptech.glide.Glide;
  * A placeholder fragment containing a simple view.
  */
 public class PostEventActivityFragment extends Fragment implements
-        View.OnClickListener {
+        View.OnClickListener,
+        CompoundButton.OnCheckedChangeListener {
 
-    public RadioButton radioAccident;
-    public RadioButton radioNaturalDisaster;
-    public RadioButton radioOther;
+    public ToggleButton toggleAccident;
+    public ToggleButton toggleNaturalDisaster;
+    public ToggleButton toggleOther;
     public TextInputEditText edtEventTitle;
     public ImageView ivEventImage;
 
@@ -38,13 +40,16 @@ public class PostEventActivityFragment extends Fragment implements
     }
 
     private void initInstances(View view) {
-        radioAccident = (RadioButton) view.findViewById(R.id.radioAccident);
-        radioNaturalDisaster = (RadioButton) view.findViewById(R.id.radioNaturalDisaster);
-        radioOther = (RadioButton) view.findViewById(R.id.radioOther);
+        toggleAccident = (ToggleButton) view.findViewById(R.id.toggleAccident);
+        toggleNaturalDisaster = (ToggleButton) view.findViewById(R.id.toggleNaturalDisaster);
+        toggleOther = (ToggleButton) view.findViewById(R.id.toggleOther);
         edtEventTitle = (TextInputEditText) view.findViewById(R.id.edtEventTitle);
         ivEventImage = (ImageView) view.findViewById(R.id.ivEventImage);
 
         ivEventImage.setOnClickListener(this);
+        toggleAccident.setOnCheckedChangeListener(this);
+        toggleNaturalDisaster.setOnCheckedChangeListener(this);
+        toggleOther.setOnCheckedChangeListener(this);
     }
 
     public void checkEditMode() {
@@ -68,6 +73,20 @@ public class PostEventActivityFragment extends Fragment implements
         if (view == ivEventImage) {
             ((PostEventActivity) getActivity()).bottomSheetDialogFragment
                     .show(getActivity().getSupportFragmentManager(), "bottomSheetDialogFragment");
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        if (compoundButton == toggleAccident && b) {
+            toggleNaturalDisaster.setChecked(false);
+            toggleOther.setChecked(false);
+        } else if (compoundButton == toggleNaturalDisaster && b) {
+            toggleAccident.setChecked(false);
+            toggleOther.setChecked(false);
+        } else if (compoundButton == toggleOther && b) {
+            toggleAccident.setChecked(false);
+            toggleNaturalDisaster.setChecked(false);
         }
     }
 }
