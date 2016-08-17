@@ -5,11 +5,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.widget.ImageView;
 
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.google.firebase.crash.FirebaseCrash;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,5 +57,53 @@ public class ImageUtil {
             FirebaseCrash.report(e);
         }
         return destinationFile;
+    }
+
+    public static Uri rotateImage(Uri imageUri, int degree) {
+        Bitmap img = BitmapFactory.decodeFile(imageUri.getPath());
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        Bitmap rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true);
+        img.recycle();
+
+        File f = new File(imageUri.getPath());
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        rotatedImg.compress(Bitmap.CompressFormat.JPEG, 100 /*ignored for PNG*/, bos);
+        byte[] bitmapdata = bos.toByteArray();
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(f);
+            fos.write(bitmapdata);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return imageUri;
+    }
+
+    public static int checkImageOrientation(Uri imageUri) {
+        ExifInterface ei = null;
+        try {
+            ei = new ExifInterface(imageUri.getPath());
+            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_UNDEFINED);
+            switch(orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    return 90;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    return 180;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    return 270;
+                case ExifInterface.ORIENTATION_NORMAL:
+                    return 0;
+                default:
+                    return 0;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

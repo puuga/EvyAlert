@@ -329,7 +329,7 @@ public class PostEventActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        bottomSheetDialogFragment.dismiss();
+//        bottomSheetDialogFragment.dismiss();
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri uri = data.getData();
             LoggerUtils.log2D("file_uri", uri.getPath());
@@ -340,6 +340,11 @@ public class PostEventActivity extends AppCompatActivity
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
             // Show the thumbnail on ImageView
             Uri imageUri = Uri.parse(mCurrentPhotoPath);
+            int angle = ImageUtil.checkImageOrientation(imageUri);
+            if (angle != 0) {
+                LoggerUtils.log2D("checkImageOrientation", String.valueOf(angle));
+                ImageUtil.rotateImage(imageUri, angle);
+            }
             setImageToView(imageUri);
 
             // ScanFile so it will be appeared on Gallery
@@ -375,6 +380,7 @@ public class PostEventActivity extends AppCompatActivity
     @Override
     public void onCameraClick() {
         LoggerUtils.log2D("bottom_sheet", "onCameraClick");
+        bottomSheetDialogFragment.dismiss();
 
         // check android.permission.WRITE_EXTERNAL_STORAGE permission
         if (ContextCompat.checkSelfPermission(PostEventActivity.this,
@@ -392,6 +398,7 @@ public class PostEventActivity extends AppCompatActivity
     @Override
     public void onGalleryClick() {
         LoggerUtils.log2D("bottom_sheet", "onGalleryClick");
+        bottomSheetDialogFragment.dismiss();
 
         // check android.permission.READ_EXTERNAL_STORAGE permission
         if (ContextCompat.checkSelfPermission(PostEventActivity.this,
@@ -438,6 +445,7 @@ public class PostEventActivity extends AppCompatActivity
             try {
                 photoFile = FileUtil.createImageFile("");
                 mCurrentPhotoPath = "file:" + photoFile.getAbsolutePath();
+                LoggerUtils.log2D("mCurrentPhotoPath", mCurrentPhotoPath);
             } catch (IOException e) {
                 LoggerUtils.log2D("createImageFile", "dispatchTakePictureIntent");
                 FirebaseCrash.report(e);
