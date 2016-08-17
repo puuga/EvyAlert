@@ -1,5 +1,6 @@
 package com.appspace.evyalert.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -7,11 +8,13 @@ import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,16 +27,29 @@ import com.appspace.evyalert.BuildConfig;
 import com.appspace.evyalert.R;
 import com.appspace.evyalert.fragment.PhotoSelectBottomSheetDialogFragment;
 import com.appspace.evyalert.fragment.PostEventActivityFragment;
+import com.appspace.evyalert.manager.ApiManager;
 import com.appspace.evyalert.model.Event;
+import com.appspace.evyalert.util.FileUtil;
+import com.appspace.evyalert.util.GeocoderUtil;
 import com.appspace.evyalert.util.Helper;
 import com.appspace.evyalert.util.ImageUtil;
+import com.appspace.evyalert.util.TimeUtil;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.crash.FirebaseCrash;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PostEventActivity extends AppCompatActivity
         implements PhotoSelectBottomSheetDialogFragment.OnBottomSheetItemClickListener {
@@ -58,6 +74,13 @@ public class PostEventActivity extends AppCompatActivity
 
     MaterialDialog mProgressDialog;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+    private FirebaseStorage mStorage;
+    private StorageReference mImageStorageRef;
+
+    double latitude;
+    double longitude;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +88,7 @@ public class PostEventActivity extends AppCompatActivity
 
         getExtra();
         initInstances();
+        initFirebase();
     }
 
     private void getExtra() {
@@ -79,6 +103,9 @@ public class PostEventActivity extends AppCompatActivity
             PostEventActivityFragment fragment = (PostEventActivityFragment)
                     getSupportFragmentManager().findFragmentById(R.id.fragment);
             fragment.checkEditMode();
+        } else {
+            latitude = intent.getDoubleExtra(Helper.LATITUDE_KEY, 0);
+            longitude = intent.getDoubleExtra(Helper.LONGITUDE_KEY, 0);
         }
     }
 
@@ -98,6 +125,12 @@ public class PostEventActivity extends AppCompatActivity
                 .build();
     }
 
+    private void initFirebase() {
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mStorage = FirebaseStorage.getInstance();
+        mImageStorageRef = mStorage.getReferenceFromUrl("gs://evyalert.appspot.com").child("images");
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_post_event, menu);
@@ -108,7 +141,7 @@ public class PostEventActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_post:
-//                LoggerUtils.log2D("PostMessageActivity", "POST_MESSAGE_REQUEST - OK");
+//                LoggerUtils.log2D("PostEventActivity", "POST_MESSAGE_REQUEST - OK");
                 mProgressDialog.show();
                 if (isEditEvent) {
                     updateEvent();
@@ -121,13 +154,162 @@ public class PostEventActivity extends AppCompatActivity
     }
 
     private void updateEvent() {
-        mProgressDialog.hide();
+        LoggerUtils.log2D("PostEventActivity", "updateEvent");
+        mProgressDialog.dismiss();
         finishWithResult(null);
     }
 
     private void postEvent() {
-        mProgressDialog.hide();
-        finishWithResult(null);
+        LoggerUtils.log2D("PostEventActivity", "postEvent");
+        PostEventActivityFragment fragment = (PostEventActivityFragment)
+                getSupportFragmentManager().findFragmentById(R.id.fragment);
+
+        final String title = fragment.edtEventTitle.getText().toString();
+
+        // check data from ui
+        if (!fragment.toggleAccident.isChecked()
+                && !fragment.toggleNaturalDisaster.isChecked()
+                && !fragment.toggleOther.isChecked()) {
+            mProgressDialog.dismiss();
+
+            Snackbar.make(container, R.string.must_select_at_last_1_type, Snackbar.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
+        // read file if select to resize and upload resized file to firebase
+        if (mCurrentUri != null) {
+            // read file if select to resize
+            File imageFile = new File(mCurrentUri.getPath());
+            if (!imageFile.canRead()) {
+                LoggerUtils.log2D("file", "!canread");
+
+                LoggerUtils.log2D("file", "FileHelper - mCurrentUri");
+                String realPathFromURI = FileUtil.getPath(this, mCurrentUri);
+                try {
+                    imageFile = new File(realPathFromURI);
+                    if (!imageFile.canRead()) {
+                        LoggerUtils.log2D("file", "!canread");
+                        mProgressDialog.dismiss();
+                        return;
+                    }
+                } catch (NullPointerException e) {
+                    mProgressDialog.dismiss();
+                    FirebaseCrash.report(e);
+                }
+            }
+            File resizedFile = null;
+            try {
+                resizedFile = FileUtil.createImageFile("resized");
+                mCurrentPhotoPath = "file:" + resizedFile.getAbsolutePath();
+            } catch (IOException e) {
+                LoggerUtils.log2D("createImageFile", "resizesFile");
+                FirebaseCrash.report(e);
+                mProgressDialog.dismiss();
+                return;
+            }
+            resizedFile = ImageUtil.resizeDown(imageFile, resizedFile);
+            if (resizedFile == null)
+                resizedFile = imageFile;
+            Uri imageUriToUpload = Uri.fromFile(resizedFile);
+
+            // upload file to firebase
+            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            String filename = TimeUtil.getHashStringFromNow() + ".jpg";
+            StorageReference uploadImageRef = mImageStorageRef.child(userId + "/" + filename);
+            UploadTask uploadTask = uploadImageRef.putFile(imageUriToUpload);
+            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    LoggerUtils.log2D("upload_firebase", "Upload is " + progress + "% done");
+                }
+            })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            FirebaseCrash.report(e);
+                        }
+                    })
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                            LoggerUtils.log2D("upload_firebase", "Uploaded at " + downloadUrl.getPath());
+                            LoggerUtils.log2D("upload_firebase", "Uploaded at " + downloadUrl.getEncodedPath());
+                            LoggerUtils.log2D("upload_firebase", "Uploaded at " + downloadUrl.getLastPathSegment());
+                            String url = "https://firebasestorage.googleapis.com" + downloadUrl.getEncodedPath() + "?alt=media";
+                            LoggerUtils.log2D("upload_firebase", "Uploaded at: " + url);
+
+                            doPostEvent(title, url);
+                        }
+                    });
+        } else {
+            doPostEvent(title, "");
+        }
+    }
+
+    private void doPostEvent(String title, final String eventPhotoUrl) {
+        if (title.equals(""))
+            title = getString(R.string.default_event_title);
+        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        String userPhotoUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
+        String eventTypeIndex = "0";
+        String provinceIndex = "0";
+        String regionIndex = "0";
+        final double lat = latitude;
+        final double lng = longitude;
+//        String address = "Thanon Srisaman, Tambon Ban Mai, Amphoe Pak Kret, Chang Wat Nonthaburi 11120";
+
+        final String district = GeocoderUtil.getDistrict(this, lat, lng);
+        final String province = GeocoderUtil.getProvince(this, lat, lng);
+
+        Call<Event> call = ApiManager.getInstance().getAPIService()
+                .postEvent(
+                        userUid,
+                        userName,
+                        userPhotoUrl,
+                        title,
+                        eventPhotoUrl,
+                        eventTypeIndex,
+                        provinceIndex,
+                        regionIndex,
+                        String.valueOf(lat),
+                        String.valueOf(lng),
+                        GeocoderUtil.getAddress(this, lat, lng),
+                        String.valueOf(TimeUtil.getCurrentTime())
+                );
+        call.enqueue(new Callback<Event>() {
+            @Override
+            public void onResponse(Call<Event> call, Response<Event> response) {
+                Event event = response.body();
+                LoggerUtils.log2D("api", "postEvent OK: " + response.message());
+                LoggerUtils.log2D("api", "postEvent OK: " + event.createdAt);
+
+                Bundle bundle = new Bundle();
+                bundle.putString(Helper.DISTRICT, district);
+                bundle.putString(Helper.PROVINCE, province);
+                if (eventPhotoUrl.equals(""))
+                    bundle.putBoolean(Helper.SUBMIT_WITH_IMAGE,false);
+                else
+                    bundle.putBoolean(Helper.SUBMIT_WITH_IMAGE,true);
+                mFirebaseAnalytics.logEvent(Helper.SUBMIT_EVENT, bundle);
+
+                mProgressDialog.dismiss();
+                finishWithResult(event);
+            }
+
+            @Override
+            public void onFailure(Call<Event> call, Throwable t) {
+                FirebaseCrash.report(t);
+                LoggerUtils.log2D("api", "postEvent onFailure: " + t.getMessage());
+
+                mProgressDialog.dismiss();
+                Snackbar.make(container, "Error", Snackbar.LENGTH_LONG)
+                        .show();
+            }
+        });
     }
 
     void finishWithResult(Event event) {
@@ -147,6 +329,7 @@ public class PostEventActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        bottomSheetDialogFragment.dismiss();
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri uri = data.getData();
             LoggerUtils.log2D("file_uri", uri.getPath());
@@ -191,12 +374,42 @@ public class PostEventActivity extends AppCompatActivity
 
     @Override
     public void onCameraClick() {
+        LoggerUtils.log2D("bottom_sheet", "onCameraClick");
 
+        // check android.permission.WRITE_EXTERNAL_STORAGE permission
+        if (ContextCompat.checkSelfPermission(PostEventActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+//            bottomSheetDialogFragment.dismiss();
+            dispatchTakePictureIntent();
+        } else {
+            ActivityCompat.requestPermissions(PostEventActivity.this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_EXTERNAL_STORAGE);
+        }
     }
 
     @Override
     public void onGalleryClick() {
+        LoggerUtils.log2D("bottom_sheet", "onGalleryClick");
 
+        // check android.permission.READ_EXTERNAL_STORAGE permission
+        if (ContextCompat.checkSelfPermission(PostEventActivity.this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+//            bottomSheetDialogFragment.dismiss();
+
+            Intent intent = new Intent();
+            // Show only images, no videos or anything else
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            // Always show the chooser (if there are multiple options available)
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+        } else {
+            ActivityCompat.requestPermissions(PostEventActivity.this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_READ_EXTERNAL_STORAGE);
+        }
     }
 
     void setImageToView(Uri uri) {
@@ -216,24 +429,6 @@ public class PostEventActivity extends AppCompatActivity
         }
     }
 
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", new Locale("en", "US"))
-                .format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DCIM), "Camera");
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
-        return image;
-    }
-
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -241,7 +436,8 @@ public class PostEventActivity extends AppCompatActivity
             // Create the File where the photo should go
             File photoFile = null;
             try {
-                photoFile = createImageFile();
+                photoFile = FileUtil.createImageFile("");
+                mCurrentPhotoPath = "file:" + photoFile.getAbsolutePath();
             } catch (IOException e) {
                 LoggerUtils.log2D("createImageFile", "dispatchTakePictureIntent");
                 FirebaseCrash.report(e);
@@ -251,15 +447,9 @@ public class PostEventActivity extends AppCompatActivity
             if (photoFile != null) {
 //                Uri photoURI = Uri.fromFile(createImageFile());
                 Uri photoURI = null;
-                try {
-                    photoURI = FileProvider.getUriForFile(PostEventActivity.this,
-                            BuildConfig.APPLICATION_ID + ".provider",
-                            createImageFile());
-                } catch (IOException e) {
-                    LoggerUtils.log2D("createImageFile", "dispatchTakePictureIntent");
-                    FirebaseCrash.report(e);
-                    return;
-                }
+                photoURI = FileProvider.getUriForFile(PostEventActivity.this,
+                        BuildConfig.APPLICATION_ID + ".provider",
+                        photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }

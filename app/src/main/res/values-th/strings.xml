@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EvyAlert</string>
+    <string name="about">เกี่ยวกับ</string>
+    <string name="action_filters">กรอง</string>
+    <string name="action_post">โพส</string>
+    <string name="action_settings">ตั้งค่า</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="default_event_title">มีบางอย่างที่นี่ โปรดระวัง</string>
+    <string name="event_accident">อุบัติเหตุ</string>
+    <string name="event_natural_disaster">ภัยธรรมชาติ</string>
+    <string name="event_other">อื่น</string>
+    <string name="filter_events">กรอง</string>
+    <string name="image_from_camera">กล้อง</string>
+    <string name="image_from_gallery">คลังภาพ</string>
+    <string name="login_ok">เข้าสู่ระบบแล้ว</string>
+    <string name="login_cancel">ยกเลิกเข้าสู่ระบบ</string>
+    <string name="must_select_at_last_1_type">ต้องเลือกชนิดเหตุการณ์</string>
+    <string name="need_login">ต้องเข้าสู่ระบบก่อน</string>
+    <string name="need_login_description">ต้องเข้าสู่ระบบก่อน จึงใช้งานได้</string>
+    <string name="profile">ประวัติส่วนตัว</string>
+    <string name="progressing">กำลังทำงาน</string>
+    <string name="title_activity_login">เข้าสู่ระบบ</string>
+    <string name="title_activity_post_event">โพสเหตุการณ์</string>
+    <string name="event_title">เหตุการณ์</string>
+    <string name="around_me_20">รอบตัว ในระยะ 20 กิโลเมตร</string>
+    <string name="around_me_50">รอบตัว ในระยะ 50 กิโลเมตร</string>
+    <string name="last_2_day">2 วันที่ผ่านมา</string>
+</resources>

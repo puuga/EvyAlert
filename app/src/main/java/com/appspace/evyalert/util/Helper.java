@@ -13,9 +13,12 @@ public class Helper {
     public static final int HOLDER_TYPE_ADMOB = 2;
 
     public static final String MODEL_EVENT_KEY = "MODEL_EVENT_KEY";
+    public static final String LATITUDE_KEY = "LATITUDE_KEY";
+    public static final String LONGITUDE_KEY = "LONGITUDE_KEY";
 
     public static final String DISTRICT = "district";
     public static final String PROVINCE = "province";
+    public static final String SUBMIT_WITH_IMAGE = "submit_with_image";
     public static final String SUBMIT_EVENT = "submit_event";
 
     public static final String FILTER_OPTION = "filter_option";

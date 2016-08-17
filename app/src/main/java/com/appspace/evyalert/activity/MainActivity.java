@@ -60,8 +60,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import retrofit2.Call;
@@ -83,8 +81,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
-    private FirebaseStorage mStorage;
-    private StorageReference mImageStorageRef;
 
     private GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
@@ -183,9 +179,6 @@ public class MainActivity extends AppCompatActivity implements
         }
         mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
         fetchConfig();
-
-        mStorage = FirebaseStorage.getInstance();
-        mImageStorageRef = mStorage.getReferenceFromUrl("gs://evyalert.appspot.com").child("images");
     }
 
     private void fetchConfig() {
@@ -439,6 +432,8 @@ public class MainActivity extends AppCompatActivity implements
     private void openPostEventActivity() {
         Intent i = new Intent(this, PostEventActivity.class);
 //        LoggerUtils.log2D("ProfileLogedinFragment", "openPostMessageActivity");
+        i.putExtra(Helper.LATITUDE_KEY, mCurrentLocation == null ? 16.7 : mCurrentLocation.getLatitude());
+        i.putExtra(Helper.LONGITUDE_KEY, mCurrentLocation == null ? 100.7 : mCurrentLocation.getLongitude());
         startActivityForResult(i, Helper.POST_EVENT_REQUEST_CODE);
     }
 
