@@ -9,6 +9,8 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
+import com.appspace.appspacelibrary.util.LoggerUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -159,6 +161,8 @@ public class FileUtil {
         String imageFileName = "JPEG_" + timeStamp + "_" + extraPostfix;
         File storageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DCIM), "Camera");
+        boolean result = storageDir.mkdirs();
+        LoggerUtils.log2D("mkdir_result", String.valueOf(result));
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */

@@ -43,9 +43,7 @@ import com.appspace.evyalert.fragment.MapFragment;
 import com.appspace.evyalert.manager.ApiManager;
 import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.util.ChromeCustomTabUtil;
-import com.appspace.evyalert.util.GeocoderUtil;
 import com.appspace.evyalert.util.Helper;
-import com.appspace.evyalert.util.TimeUtil;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -274,25 +272,7 @@ public class MainActivity extends AppCompatActivity implements
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.actionFilters) {
-            new MaterialDialog.Builder(this)
-                    .title(R.string.filter_events)
-                    .items(R.array.scope)
-                    .itemsCallback(new MaterialDialog.ListCallback() {
-                        @Override
-                        public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                            LoggerUtils.log2D(TAG, "select: " + which + ", " + text);
-                            if (mCurrentFilterOption != which) {
-                                mCurrentFilterOption = which;
-                                loadEvent(mCurrentFilterOption);
-                                isFirstTimeLoadEvent = true;
-                            }
-
-                            Bundle bundle = new Bundle();
-                            bundle.putString(Helper.FILTER_OPTION, String.valueOf(text));
-                            mFirebaseAnalytics.logEvent(Helper.SELECT_FILTER_OPTION_EVENT, bundle);
-                        }
-                    })
-                    .show();
+            showFilterDialog();
             return true;
         }
 
@@ -366,64 +346,6 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private void addEvent() {
-        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-        String userPhotoUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
-        String title = "test test";
-        String eventPhotoUrl = "https://firebasestorage.googleapis.com/v0/b/evyalert.appspot.com/o/images%2F13320908_960637794056268_7477080000136888361_o.jpg?alt=media&token=0d7f3b97-ec62-46e9-917a-010111ea1ff3";
-        String eventTypeIndex = "0";
-        String provinceIndex = "0";
-        String regionIndex = "0";
-        final double lat = mCurrentLocation == null ? 16.7 : mCurrentLocation.getLatitude();
-        final double lng = mCurrentLocation == null ? 100.7 : mCurrentLocation.getLongitude();
-//        String address = "Thanon Srisaman, Tambon Ban Mai, Amphoe Pak Kret, Chang Wat Nonthaburi 11120";
-
-        GeocoderUtil.getDistrict(this, lat, lng);
-        GeocoderUtil.getProvince(this, lat, lng);
-
-        Call<Event> call = ApiManager.getInstance().getAPIService()
-                .postEvent(
-                        userUid,
-                        userName,
-                        userPhotoUrl,
-                        title,
-                        eventPhotoUrl,
-                        eventTypeIndex,
-                        provinceIndex,
-                        regionIndex,
-                        String.valueOf(lat),
-                        String.valueOf(lng),
-                        GeocoderUtil.getAddress(this, lat, lng),
-                        String.valueOf(TimeUtil.getCurrentTime())
-                );
-        call.enqueue(new Callback<Event>() {
-            @Override
-            public void onResponse(Call<Event> call, Response<Event> response) {
-                Event event = response.body();
-                LoggerUtils.log2D("api", "postEvent OK: " + response.message());
-                LoggerUtils.log2D("api", "postEvent OK: " + event.createdAt);
-
-                Bundle bundle = new Bundle();
-                bundle.putString(Helper.DISTRICT, GeocoderUtil.getDistrict(MainActivity.this, lat, lng));
-                bundle.putString(Helper.PROVINCE, GeocoderUtil.getProvince(MainActivity.this, lat, lng));
-                mFirebaseAnalytics.logEvent(Helper.SUBMIT_EVENT, bundle);
-
-                Snackbar.make(fabAddEvent, "Add event OK", Snackbar.LENGTH_LONG)
-                        .show();
-
-                loadEvent(mCurrentFilterOption);
-            }
-
-            @Override
-            public void onFailure(Call<Event> call, Throwable t) {
-                FirebaseCrash.report(t);
-                LoggerUtils.log2D("api", "postEvent onFailure: " + t.getMessage());
-            }
-        });
-
-    }
-
     protected void gotoLoginActivity() {
         Intent i = new Intent(this, LoginActivity.class);
         startActivityForResult(i, Helper.LOGIN_RESUEST_CODE);
@@ -462,6 +384,28 @@ public class MainActivity extends AppCompatActivity implements
 
     public void hideProgressDialog() {
         mProgressDialog.dismiss();
+    }
+
+    private void showFilterDialog() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.filter_events)
+                .items(R.array.scope)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        LoggerUtils.log2D(TAG, "select: " + which + ", " + text);
+                        if (mCurrentFilterOption != which) {
+                            mCurrentFilterOption = which;
+                            loadEvent(mCurrentFilterOption);
+                            isFirstTimeLoadEvent = true;
+                        }
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString(Helper.FILTER_OPTION, String.valueOf(text));
+                        mFirebaseAnalytics.logEvent(Helper.SELECT_FILTER_OPTION_EVENT, bundle);
+                    }
+                })
+                .show();
     }
 
     private void createLocationRequest() {
