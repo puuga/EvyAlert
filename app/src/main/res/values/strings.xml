@@ -46,7 +46,7 @@
         <!--<item>Southern, last 2 days</item>-->
     <!--</string-array>-->
 
-    <string-array name="scope_northern">
+    <string-array name="scope_northern" translatable="false">
         <item>Chiang Mai</item>
         <item>Chiang Rai</item>
         <item>Kamphaeng Phet</item>
@@ -66,7 +66,7 @@
         <item>Uttaradit</item>
     </string-array>
 
-    <string-array name="scope_northeastern">
+    <string-array name="scope_northeastern" translatable="false">
         <item>Amnat Charoen</item>
         <item>Bueng Kan</item>
         <item>Buri Ram</item>
@@ -89,7 +89,7 @@
         <item>Yasothon</item>
     </string-array>
 
-    <string-array name="scope_central">
+    <string-array name="scope_central" translatable="false">
         <item>Ang Thong</item>
         <item>Bangkok</item>
         <item>Chainat</item>
@@ -111,7 +111,7 @@
         <item>Suphan Buri</item>
     </string-array>
 
-    <string-array name="scope_eastern">
+    <string-array name="scope_eastern" translatable="false">
         <item>Chachoengsao</item>
         <item>Chanthaburi</item>
         <item>Chon Buri</item>
@@ -121,7 +121,7 @@
         <item>Trat</item>
     </string-array>
 
-    <string-array name="scope_southern">
+    <string-array name="scope_southern" translatable="false">
         <item>Chumphon</item>
         <item>Krabi</item>
         <item>Nakhon Si Thammarat</item>

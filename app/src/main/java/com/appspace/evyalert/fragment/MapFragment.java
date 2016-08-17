@@ -2,18 +2,25 @@ package com.appspace.evyalert.fragment;
 
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.R;
 import com.appspace.evyalert.model.Event;
+import com.appspace.evyalert.util.TimeUtil;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -180,15 +187,48 @@ public class MapFragment extends Fragment implements
 
             LatLng latLng = new LatLng(event.lat, event.lng);
 
-            Marker marker = googleMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title("@" + event.userName)
-                    .snippet(event.title));
+            Marker marker = googleMap.addMarker(
+                    new MarkerOptions()
+                            .position(latLng)
+                            .title("@" + event.userName)
+                            .snippet(event.title + "\n" + TimeUtil.timpStampFormater(event.createdAtLong))
+            );
 
             marker.setTag(i);
             markers[i] = marker;
             markerCount++;
         }
+
+        googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                Context context = getActivity(); //or getActivity(), YourActivity.this, etc.
+
+                LinearLayout info = new LinearLayout(context);
+                info.setOrientation(LinearLayout.VERTICAL);
+
+                TextView title = new TextView(context);
+                title.setTextColor(Color.BLACK);
+                title.setGravity(Gravity.CENTER);
+                title.setTypeface(null, Typeface.BOLD);
+                title.setText(marker.getTitle());
+
+                TextView snippet = new TextView(context);
+                snippet.setTextColor(Color.GRAY);
+                snippet.setGravity(Gravity.CENTER);
+                snippet.setText(marker.getSnippet());
+
+                info.addView(title);
+                info.addView(snippet);
+
+                return info;
+            }
+        });
         LoggerUtils.log2D("marker", "count: " + events.length + ", " + markerCount);
     }
 
