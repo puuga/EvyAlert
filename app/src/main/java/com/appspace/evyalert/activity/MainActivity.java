@@ -342,7 +342,12 @@ public class MainActivity extends AppCompatActivity implements
             ChromeCustomTabUtil.open(this, url);
         } else if (view == fabAddEvent) {
 //            addEvent();
-            openPostEventActivity();
+            if (isAcceptableAccuracy) {
+                openPostEventActivity();
+            } else {
+                Snackbar.make(fabAddEvent, R.string.wait_gps, Snackbar.LENGTH_SHORT)
+                        .show();
+            }
         }
     }
 
@@ -538,12 +543,7 @@ public class MainActivity extends AppCompatActivity implements
             public void onResponse(Call<Event[]> call, Response<Event[]> response) {
                 hideProgressDialog();
                 Event[] events = response.body();
-
-                EventListFragment eventListFragment = (EventListFragment) mSectionsPagerAdapter.getItem(1);
-                eventListFragment.loadDataToRecyclerView(events);
-
-                MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(0);
-                mapFragment.createMarker(events);
+                loadDataToView(events);
             }
 
             @Override
@@ -566,12 +566,7 @@ public class MainActivity extends AppCompatActivity implements
             public void onResponse(Call<Event[]> call, Response<Event[]> response) {
                 hideProgressDialog();
                 Event[] events = response.body();
-
-                EventListFragment eventListFragment = (EventListFragment) mSectionsPagerAdapter.getItem(1);
-                eventListFragment.loadDataToRecyclerView(events);
-
-                MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(0);
-                mapFragment.createMarker(events);
+                loadDataToView(events);
             }
 
             @Override
@@ -582,17 +577,66 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
+    private void loadDataToView(Event[] events) {
+        EventListFragment eventListFragment = (EventListFragment) mSectionsPagerAdapter.getItem(1);
+        eventListFragment.loadDataToRecyclerView(events);
+
+        MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(0);
+        mapFragment.createMarker(events);
+    }
+
+    private void deleteEvent(Event event) {
+        showProgressDialog();
+        Call<Response<Void>> call = ApiManager.getInstance().getAPIService()
+                .deleteEvent(event.eventUid);
+        call.enqueue(new Callback<Response<Void>>() {
+            @Override
+            public void onResponse(Call<Response<Void>> call, Response<Response<Void>> response) {
+                hideProgressDialog();
+                if (response.code() == 204) {
+                    Snackbar.make(fabAddEvent, "Event deleted", Snackbar.LENGTH_SHORT)
+                            .show();
+                    loadEvent(mCurrentFilterOption);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response<Void>> call, Throwable t) {
+                hideProgressDialog();
+                FirebaseCrash.report(t);
+            }
+        });
+    }
+
     @Override
     public void onEventItemClickCallback(Event event, int position) {
-        LoggerUtils.log2D(TAG, "onEventItemClickCallback: " + position);
+        LoggerUtils.log2D(TAG, "onEventItemClickCallback: " + event.eventUid);
         mViewPager.setCurrentItem(0, true);
         MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(0);
         mapFragment.focusOnMarker(position);
     }
 
     @Override
-    public void onEventItemPhotoClickCallback(Event event, int position) {
+    public void onEventItemLongClickCallback(final Event event, int position) {
+        LoggerUtils.log2D(TAG, "onEventItemLongClickCallback: " + event.eventUid);
+        new MaterialDialog.Builder(this)
+                .title(R.string.delete)
+                .content(R.string.delete_confirm)
+                .positiveText(R.string.delete)
+                .negativeText(R.string.cancel)
+                .neutralText(R.string.later)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        deleteEvent(event);
+                    }
+                })
+                .show();
+    }
 
+    @Override
+    public void onEventItemPhotoClickCallback(final Event event, int position) {
+        LoggerUtils.log2D(TAG, "onEventItemPhotoClickCallback: " + event.eventUid);
     }
 
     public static class PlaceholderFragment extends Fragment {

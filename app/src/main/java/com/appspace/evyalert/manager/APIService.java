@@ -4,6 +4,7 @@ package com.appspace.evyalert.manager;
 import com.appspace.evyalert.model.Event;
 
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -45,5 +46,10 @@ public interface APIService {
     @GET("service_events.php")
     Call<Event[]> loadEventsLast2Days(
             @Query("filter") String filterOption
+    );
+
+    @GET("service_event_delete.php")
+    Call<Response<Void>> deleteEvent(
+            @Query("event_uid") String eventId
     );
 }

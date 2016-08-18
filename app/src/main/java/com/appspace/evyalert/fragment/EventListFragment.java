@@ -73,6 +73,12 @@ public class EventListFragment extends Fragment implements EventAdapter.OnEventI
     }
 
     @Override
+    public void onEventItemLongClickCallback(Event event, int position) {
+        LoggerUtils.log2D(TAG, "onEventItemClickCallback: " + position);
+        callback.onEventItemLongClickCallback(event, position);
+    }
+
+    @Override
     public void onEventItemPhotoClickCallback(Event event, int position) {
 
     }

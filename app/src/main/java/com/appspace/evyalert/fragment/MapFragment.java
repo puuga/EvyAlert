@@ -20,15 +20,18 @@ import android.widget.TextView;
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.R;
 import com.appspace.evyalert.model.Event;
+import com.appspace.evyalert.util.EventIconUtil;
 import com.appspace.evyalert.util.TimeUtil;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.crash.FirebaseCrash;
 
 public class MapFragment extends Fragment implements
         OnMapReadyCallback,
@@ -187,12 +190,29 @@ public class MapFragment extends Fragment implements
 
             LatLng latLng = new LatLng(event.lat, event.lng);
 
-            Marker marker = googleMap.addMarker(
-                    new MarkerOptions()
-                            .position(latLng)
-                            .title("@" + event.userName)
-                            .snippet(event.title + "\n" + TimeUtil.timpStampFormater(event.createdAtLong))
-            );
+
+            int eventTypeIndex = Integer.parseInt(event.eventTypeIndex);
+
+            Marker marker = null;
+            try {
+                marker = googleMap.addMarker(
+                        new MarkerOptions()
+                                .position(latLng)
+                                .title("@" + event.userName)
+                                .snippet(event.title + "\n" + TimeUtil.timpStampFormater(event.createdAtLong))
+                                .icon(BitmapDescriptorFactory
+                                        .fromResource(EventIconUtil.eventColorIcons[eventTypeIndex]))
+                );
+            } catch (NullPointerException e) {
+                FirebaseCrash.report(e);
+
+                marker = googleMap.addMarker(
+                        new MarkerOptions()
+                                .position(latLng)
+                                .title("@" + event.userName)
+                                .snippet(event.title + "\n" + TimeUtil.timpStampFormater(event.createdAtLong))
+                );
+            }
 
             marker.setTag(i);
             markers[i] = marker;

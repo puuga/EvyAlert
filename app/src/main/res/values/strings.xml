@@ -13,6 +13,9 @@
     <string name="need_login_description">Need login</string>
     <string name="ok" translatable="false">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="later">Later</string>
+    <string name="delete_confirm">Do you want to delete?</string>
     <string name="open_drawer_menu" translatable="false">open drawer menu</string>
     <string name="close_drawer_menu" translatable="false">close drawer menu</string>
     <string name="profile">Profile</string>
@@ -24,6 +27,7 @@
     <string name="event_title">Title</string>
     <string name="default_event_title">Something happen here, be careful.</string>
     <string name="must_select_at_last_1_type">Must select at last 1 type.</string>
+    <string name="wait_gps">Please, wait for GPS signal.</string>
 
     <string name="around_me_20">Around me in 20 Km</string>
     <string name="around_me_50">Around me in 50 Km</string>

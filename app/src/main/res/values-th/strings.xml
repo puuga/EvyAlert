@@ -27,4 +27,8 @@
     <string name="around_me_50">รอบตัว ในระยะ 50 กิโลเมตร</string>
     <string name="last_2_day">2 วันที่ผ่านมา</string>
     <string name="event_traffic_jam">รถติด</string>
+    <string name="wait_gps">โปรดรอสัญญาณ GPS</string>
+    <string name="delete">ลบ</string>
+    <string name="delete_confirm">ต้องการลบ?</string>
+    <string name="later">ไว้ทีหลัง</string>
 </resources>

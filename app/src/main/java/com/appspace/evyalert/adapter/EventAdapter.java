@@ -18,6 +18,7 @@ import com.appspace.evyalert.view.holder.EventWithImageHolder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.google.android.gms.ads.AdRequest;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -36,6 +37,8 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public interface OnEventItemClickCallback {
         void onEventItemClickCallback(Event event, int position);
+
+        void onEventItemLongClickCallback(Event event, int position);
 
         void onEventItemPhotoClickCallback(Event event, int position);
     }
@@ -116,6 +119,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 setDataToHolder(holder0, event);
 
                 setOnEventItemClickCallback(holder0, event, listPosition);
+                setOnEventItemLongClickCallback(holder0, event, listPosition);
                 break;
             case Helper.HOLDER_TYPE_IMAGE:
                 EventWithImageHolder holder1 = (EventWithImageHolder) holder;
@@ -123,6 +127,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 setEventImageToHolder(holder1, event);
 
                 setOnEventItemClickCallback(holder1, event, listPosition);
+                setOnEventItemLongClickCallback(holder1, event, listPosition);
                 break;
         }
     }
@@ -159,14 +164,27 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     private void setOnEventItemClickCallback(EventHolder holder, final Event event, final int adapterPosition) {
-        LoggerUtils.log2D(TAG, "onEventItemClickCallback: " + adapterPosition);
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                LoggerUtils.log2D(TAG, "onEventItemClickCallback: " + adapterPosition);
                 callback.onEventItemClickCallback(event, adapterPosition);
             }
         });
 
+    }
+
+    private void setOnEventItemLongClickCallback(EventHolder holder, final Event event, final int adapterPosition) {
+        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (event.userUid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                    callback.onEventItemLongClickCallback(event, adapterPosition);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     @Override
