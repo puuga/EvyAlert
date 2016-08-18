@@ -56,8 +56,8 @@ public class IntroActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Helper.LOGIN_RESUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                Snackbar.make(container, R.string.login_ok, Snackbar.LENGTH_SHORT)
-                        .show();
+//                Snackbar.make(container, R.string.login_ok, Snackbar.LENGTH_SHORT)
+//                        .show();
                 gotoMainActivity();
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Snackbar.make(container, R.string.login_cancel, Snackbar.LENGTH_SHORT)

@@ -341,13 +341,7 @@ public class MainActivity extends AppCompatActivity implements
             String url = mFirebaseRemoteConfig.getString(Helper.ABOUT_URL_CONFIG_KEY);
             ChromeCustomTabUtil.open(this, url);
         } else if (view == fabAddEvent) {
-//            addEvent();
-            if (isAcceptableAccuracy) {
-                openPostEventActivity();
-            } else {
-                Snackbar.make(fabAddEvent, R.string.wait_gps, Snackbar.LENGTH_SHORT)
-                        .show();
-            }
+            openPostEventActivity();
         }
     }
 
@@ -357,10 +351,15 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void openPostEventActivity() {
+        if (!isAcceptableAccuracy || mCurrentLocation == null) {
+            Snackbar.make(fabAddEvent, R.string.wait_gps, Snackbar.LENGTH_SHORT)
+                    .show();
+            return;
+        }
         Intent i = new Intent(this, PostEventActivity.class);
 //        LoggerUtils.log2D("ProfileLogedinFragment", "openPostMessageActivity");
-        i.putExtra(Helper.LATITUDE_KEY, mCurrentLocation == null ? 16.7 : mCurrentLocation.getLatitude());
-        i.putExtra(Helper.LONGITUDE_KEY, mCurrentLocation == null ? 100.7 : mCurrentLocation.getLongitude());
+        i.putExtra(Helper.LATITUDE_KEY, mCurrentLocation.getLatitude());
+        i.putExtra(Helper.LONGITUDE_KEY, mCurrentLocation.getLongitude());
         startActivityForResult(i, Helper.POST_EVENT_REQUEST_CODE);
     }
 
