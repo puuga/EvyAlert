@@ -24,8 +24,11 @@ public class ApiManager {
     private ApiManager() {
         mContext = Contextor.getInstance().getContext();
 
+//        String url = "http://evyalert.southeastasia.cloudapp.azure.com/evyalert-service/";
+        String url = "https://evyalert.roomlinksaas.com/evyalert-service/";
+
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://evyalert.southeastasia.cloudapp.azure.com/evyalert-service/")
+                .baseUrl(url)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
