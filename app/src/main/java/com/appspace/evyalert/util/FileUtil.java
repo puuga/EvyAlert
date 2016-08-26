@@ -121,7 +121,6 @@ public class FileUtil {
         return null;
     }
 
-
     /**
      * @param uri The Uri to check.
      * @return Whether the Uri authority is ExternalStorageProvider.
@@ -154,7 +153,7 @@ public class FileUtil {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 
-    public static File createImageFile(String extraPostfix) throws IOException {
+    public static File createJpgImageFile(String extraPostfix) throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", new Locale("en", "US"))
                 .format(new Date());

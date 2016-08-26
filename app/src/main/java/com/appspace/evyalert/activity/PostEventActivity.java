@@ -201,7 +201,7 @@ public class PostEventActivity extends AppCompatActivity
             }
             File resizedFile = null;
             try {
-                resizedFile = FileUtil.createImageFile("resized");
+                resizedFile = FileUtil.createJpgImageFile("resized");
                 mCurrentPhotoPath = "file:" + resizedFile.getAbsolutePath();
             } catch (IOException e) {
                 LoggerUtils.log2D("createImageFile", "resizesFile");
@@ -443,7 +443,7 @@ public class PostEventActivity extends AppCompatActivity
             // Create the File where the photo should go
             File photoFile = null;
             try {
-                photoFile = FileUtil.createImageFile("");
+                photoFile = FileUtil.createJpgImageFile("");
                 mCurrentPhotoPath = "file:" + photoFile.getAbsolutePath();
                 LoggerUtils.log2D("mCurrentPhotoPath", mCurrentPhotoPath);
             } catch (IOException e) {
