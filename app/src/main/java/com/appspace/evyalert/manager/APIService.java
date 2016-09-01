@@ -48,6 +48,12 @@ public interface APIService {
             @Query("filter") String filterOption // 2
     );
 
+    @GET("service_events.php")
+    Call<Event[]> loadEventsByProvinces(
+            @Query("filter") String filterOption, // 3
+            @Query("province_id") String provinceId // 3
+    );
+
     @GET("service_event_delete.php")
     Call<Response<Void>> deleteEvent(
             @Query("event_uid") String eventId

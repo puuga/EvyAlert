@@ -6,8 +6,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.ToggleButton;
 
 import com.appspace.appspacelibrary.util.LoggerUtils;
@@ -20,7 +23,8 @@ import com.bumptech.glide.Glide;
  */
 public class PostEventActivityFragment extends Fragment implements
         View.OnClickListener,
-        CompoundButton.OnCheckedChangeListener {
+        CompoundButton.OnCheckedChangeListener,
+        AdapterView.OnItemSelectedListener {
 
     public ToggleButton toggleAccident;
     public ToggleButton toggleNaturalDisaster;
@@ -28,8 +32,11 @@ public class PostEventActivityFragment extends Fragment implements
     public ToggleButton toggleTrafficJam;
     public TextInputEditText edtEventTitle;
     public ImageView ivEventImage;
+    public Spinner spnProvince;
 
     public int eventTypeIndex = -1;
+    public int provinceIndex = 0;
+    public boolean didSelectedProvince = false;
 
     public PostEventActivityFragment() {
     }
@@ -49,12 +56,19 @@ public class PostEventActivityFragment extends Fragment implements
         toggleTrafficJam = (ToggleButton) view.findViewById(R.id.toggleTrafficJam);
         edtEventTitle = (TextInputEditText) view.findViewById(R.id.edtEventTitle);
         ivEventImage = (ImageView) view.findViewById(R.id.ivEventImage);
+        spnProvince = (Spinner) view.findViewById(R.id.spnProvince);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.province, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnProvince.setAdapter(adapter);
 
         ivEventImage.setOnClickListener(this);
         toggleAccident.setOnCheckedChangeListener(this);
         toggleNaturalDisaster.setOnCheckedChangeListener(this);
         toggleOther.setOnCheckedChangeListener(this);
         toggleTrafficJam.setOnCheckedChangeListener(this);
+        spnProvince.setOnItemSelectedListener(this);
     }
 
     public void checkEditMode() {
@@ -108,5 +122,18 @@ public class PostEventActivityFragment extends Fragment implements
             toggleNaturalDisaster.setChecked(false);
             toggleOther.setChecked(false);
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        provinceIndex = i;
+        didSelectedProvince = true;
+        LoggerUtils.log2D("onItemSelected", String.valueOf(i));
+        LoggerUtils.log2D("onItemSelected", adapterView.getItemAtPosition(i).toString());
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }

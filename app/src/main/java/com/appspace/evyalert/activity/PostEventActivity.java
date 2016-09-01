@@ -30,6 +30,7 @@ import com.appspace.evyalert.fragment.PostEventActivityFragment;
 import com.appspace.evyalert.manager.ApiManager;
 import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.util.FileUtil;
+import com.appspace.evyalert.util.FirebaseStorageUtil;
 import com.appspace.evyalert.util.GeocoderUtil;
 import com.appspace.evyalert.util.Helper;
 import com.appspace.evyalert.util.ImageUtil;
@@ -175,8 +176,8 @@ public class PostEventActivity extends AppCompatActivity
             return;
         }
 
-
         final String eventTypeIndex = String.valueOf(fragment.eventTypeIndex);
+        final String provinceIndex = String.valueOf(fragment.provinceIndex+1);
 
         // read file if select to resize and upload resized file to firebase
         if (mCurrentUri != null) {
@@ -222,7 +223,9 @@ public class PostEventActivity extends AppCompatActivity
             uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                    double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    long byteTransferred = taskSnapshot.getBytesTransferred();
+                    long totalByteCount = taskSnapshot.getTotalByteCount();
+                    double progress = (100.0 * byteTransferred) / totalByteCount;
                     LoggerUtils.log2D("upload_firebase", "Upload is " + progress + "% done");
                 }
             })
@@ -236,31 +239,26 @@ public class PostEventActivity extends AppCompatActivity
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                            LoggerUtils.log2D("upload_firebase", "Uploaded at " + downloadUrl.getPath());
-                            LoggerUtils.log2D("upload_firebase", "Uploaded at " + downloadUrl.getEncodedPath());
-                            LoggerUtils.log2D("upload_firebase", "Uploaded at " + downloadUrl.getLastPathSegment());
-                            String url = "https://firebasestorage.googleapis.com" + downloadUrl.getEncodedPath() + "?alt=media";
+                            String url = FirebaseStorageUtil.getMediaDownloadUrl(downloadUrl);
                             LoggerUtils.log2D("upload_firebase", "Uploaded at: " + url);
 
-                            doPostEvent(title, url, eventTypeIndex);
+                            doPostEvent(title, url, eventTypeIndex, provinceIndex);
                         }
                     });
         } else {
-            doPostEvent(title, "", eventTypeIndex);
+            doPostEvent(title, "", eventTypeIndex, provinceIndex);
         }
     }
 
-    private void doPostEvent(String title, final String eventPhotoUrl, String eventTypeIndex) {
+    private void doPostEvent(String title, final String eventPhotoUrl, String eventTypeIndex, String provinceIndex) {
         if (title.equals(""))
             title = getString(R.string.default_event_title);
         String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
         String userPhotoUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
-        String provinceIndex = "0";
         String regionIndex = "0";
         final double lat = latitude;
         final double lng = longitude;
-//        String address = "Thanon Srisaman, Tambon Ban Mai, Amphoe Pak Kret, Chang Wat Nonthaburi 11120";
 
         final String district = GeocoderUtil.getDistrict(this, lat, lng);
         final String province = GeocoderUtil.getProvince(this, lat, lng);
@@ -330,7 +328,9 @@ public class PostEventActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
 
 //        bottomSheetDialogFragment.dismiss();
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if (requestCode == PICK_IMAGE_REQUEST
+                && resultCode == RESULT_OK
+                && data != null && data.getData() != null) {
             Uri uri = data.getData();
             LoggerUtils.log2D("file_uri", uri.getPath());
             LoggerUtils.log2D("file_uri", uri.toString());
@@ -358,7 +358,10 @@ public class PostEventActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_WRITE_EXTERNAL_STORAGE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

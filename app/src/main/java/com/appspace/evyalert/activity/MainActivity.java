@@ -393,7 +393,7 @@ public class MainActivity extends AppCompatActivity implements
     private void showFilterDialog() {
         new MaterialDialog.Builder(this)
                 .title(R.string.filter_events)
-                .items(R.array.scope)
+                .items(R.array.scope_new)
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
@@ -515,22 +515,8 @@ public class MainActivity extends AppCompatActivity implements
             case 2:
                 loadEventsLast2Days(option);
                 break;
-            case 3:
-                hideProgressDialog();
-                break;
-            case 4:
-                hideProgressDialog();
-                break;
-            case 5:
-                hideProgressDialog();
-                break;
-            case 6:
-                hideProgressDialog();
-                break;
-            case 7:
-                hideProgressDialog();
-                break;
             default:
+                loadEventsByProvince(option - 2);
         }
     }
 
@@ -560,6 +546,27 @@ public class MainActivity extends AppCompatActivity implements
                         String.valueOf(mCurrentLocation.getLatitude()),
                         String.valueOf(mCurrentLocation.getLongitude())
                 );
+        call.enqueue(new Callback<Event[]>() {
+            @Override
+            public void onResponse(Call<Event[]> call, Response<Event[]> response) {
+                hideProgressDialog();
+                Event[] events = response.body();
+                loadDataToView(events);
+            }
+
+            @Override
+            public void onFailure(Call<Event[]> call, Throwable t) {
+                hideProgressDialog();
+                FirebaseCrash.report(t);
+            }
+        });
+    }
+
+
+    private void loadEventsByProvince(int provinceId) {
+        LoggerUtils.log2D(TAG, "provinceId: " + provinceId);
+        Call<Event[]> call = ApiManager.getInstance().getAPIService()
+                .loadEventsByProvinces("3", String.valueOf(provinceId));
         call.enqueue(new Callback<Event[]>() {
             @Override
             public void onResponse(Call<Event[]> call, Response<Event[]> response) {

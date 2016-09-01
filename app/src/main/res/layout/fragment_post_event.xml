@@ -92,10 +92,27 @@
         </android.support.design.widget.TextInputLayout>
 
         <ImageView
-            android:id="@+id/ivIcEventPhoto"
+            android:id="@+id/ivIcEventProvince"
             android:layout_width="@dimen/icon_size_post"
             android:layout_height="@dimen/icon_size_post"
             android:layout_below="@id/tilEventTitle"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_my_location_grey_500_36dp" />
+
+        <Spinner
+            android:id="@+id/spnProvince"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/ivIcEventProvince"
+            android:layout_marginBottom="32dp"
+            android:layout_toEndOf="@id/ivIcEventProvince" />
+
+
+        <ImageView
+            android:id="@+id/ivIcEventPhoto"
+            android:layout_width="@dimen/icon_size_post"
+            android:layout_height="@dimen/icon_size_post"
+            android:layout_below="@id/spnProvince"
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_photo_camera_grey_500_36dp" />
 
