@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements
     boolean isFirstTimeLoadEvent = false;
     float mAcceptableAccuracy;
     int mCurrentFilterOption = 0;
+    boolean didChangeEventFilter = false;
 
     Location mFirstTimeLocation;
 
@@ -184,12 +185,15 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onDrawerOpened(View drawerView) {
-
+                LoggerUtils.log2D(TAG, "onDrawerOpened");
+                didChangeEventFilter = false;
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 LoggerUtils.log2D(TAG, "onDrawerClosed");
+                if (didChangeEventFilter)
+                    loadEvent(mCurrentFilterOption);
             }
 
             @Override
@@ -709,12 +713,16 @@ public class MainActivity extends AppCompatActivity implements
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         if (compoundButton == swAccident) {
             DataStoreUtils.getInstance().setAccidentSwitch(b);
+            didChangeEventFilter = !didChangeEventFilter;
         } else if (compoundButton == swNaturalDisaster) {
             DataStoreUtils.getInstance().setNaturalDisasterSwitch(b);
+            didChangeEventFilter = !didChangeEventFilter;
         } else if (compoundButton == swOther) {
             DataStoreUtils.getInstance().setOtherSwitch(b);
+            didChangeEventFilter = !didChangeEventFilter;
         } else if (compoundButton == swTrafficJam) {
             DataStoreUtils.getInstance().setTrafficJamSwitch(b);
+            didChangeEventFilter = !didChangeEventFilter;
         }
     }
 

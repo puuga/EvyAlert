@@ -22,6 +22,7 @@
     <string name="about">About</string>
     <string name="progressing">progressing…</string>
     <string name="filter_events">Filter events</string>
+    <string name="display_events">Display events</string>
     <string name="image_from_camera">Camera</string>
     <string name="image_from_gallery">Gallery</string>
     <string name="event_title">Title</string>

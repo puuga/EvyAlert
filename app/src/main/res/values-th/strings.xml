@@ -11,6 +11,7 @@
     <string name="event_natural_disaster">ภัยธรรมชาติ</string>
     <string name="event_other">อื่นๆ</string>
     <string name="filter_events">กรอง</string>
+    <string name="display_events">แสดงเหตุการณ์</string>
     <string name="image_from_camera">กล้อง</string>
     <string name="image_from_gallery">คลังภาพ</string>
     <string name="login_ok">เข้าสู่ระบบแล้ว</string>

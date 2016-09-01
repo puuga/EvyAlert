@@ -149,7 +149,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 .getStringArray(R.array.event_type)[Integer.parseInt(event.eventTypeIndex)];
         holder.tvEventType.setText(eventText);
 
-        int eventImageResource = EventIconUtil.eventIcons[Integer.parseInt(event.eventTypeIndex)];
+        int eventImageResource = EventIconUtil.eventColorIcons[Integer.parseInt(event.eventTypeIndex)];
         holder.ivEventType.setImageResource(eventImageResource);
 
         holder.tvEventTitle.setText(event.title);

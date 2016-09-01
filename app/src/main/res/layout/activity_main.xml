@@ -107,40 +107,49 @@
                     android:layout_marginStart="16dp" />
             </RelativeLayout>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/filter_events" />
+
             <Switch
                 android:id="@+id/swAccident"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/event_accident"
-                android:drawableStart="@drawable/ic_accident_red_600_36dp"
                 android:drawablePadding="8dp"
+                android:drawableStart="@drawable/ic_accident_red_600_36dp"
+                android:text="@string/event_accident"
                 android:theme="@style/CustomDrawerMenuItem" />
 
             <Switch
                 android:id="@+id/swNaturalDisaster"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/event_natural_disaster"
-                android:drawableStart="@drawable/ic_natural_disaster_amber_800_36dp"
                 android:drawablePadding="8dp"
+                android:drawableStart="@drawable/ic_natural_disaster_amber_800_36dp"
+                android:text="@string/event_natural_disaster"
                 android:theme="@style/CustomDrawerMenuItem" />
 
             <Switch
                 android:id="@+id/swOther"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/event_other"
-                android:drawableStart="@drawable/ic_other_amber_800_36dp"
                 android:drawablePadding="8dp"
+                android:drawableStart="@drawable/ic_other_amber_800_36dp"
+                android:text="@string/event_other"
                 android:theme="@style/CustomDrawerMenuItem" />
 
             <Switch
                 android:id="@+id/swTrafficJam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/event_traffic_jam"
-                android:drawableStart="@drawable/ic_traffic_jam_orange_800_36dp"
                 android:drawablePadding="8dp"
+                android:drawableStart="@drawable/ic_traffic_jam_orange_800_36dp"
+                android:text="@string/event_traffic_jam"
                 android:theme="@style/CustomDrawerMenuItem" />
 
             <Button
