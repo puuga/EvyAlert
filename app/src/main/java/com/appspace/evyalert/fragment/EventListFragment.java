@@ -84,6 +84,10 @@ public class EventListFragment extends Fragment implements EventAdapter.OnEventI
     }
 
     public void loadDataToRecyclerView(Event[] events) {
+        if (eventList == null) {
+//            getActivity().recreate();
+            return;
+        }
         eventList.clear();
         LoggerUtils.log2D("api", "loadDataToRecyclerView:OK - " + eventList.size());
         eventList.addAll(Arrays.asList(events));

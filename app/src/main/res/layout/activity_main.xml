@@ -75,6 +75,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="150dp">
 
+                <ImageView
+                    android:id="@+id/ivProfileBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true" />
+
                 <TextView
                     android:id="@+id/tvUsername"
                     android:layout_width="match_parent"
@@ -82,21 +89,59 @@
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentStart="true"
                     android:background="@color/black_alpha"
+                    android:gravity="center"
                     android:paddingBottom="8dp"
                     android:paddingEnd="16dp"
                     android:paddingStart="16dp"
                     android:paddingTop="8dp"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@color/white" />
 
                 <ImageView
                     android:id="@+id/ivProfile"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:layout_above="@id/tvUsername"
-                    android:layout_alignParentStart="true"
+                    android:layout_centerInParent="true"
                     android:layout_marginBottom="8dp"
                     android:layout_marginStart="16dp" />
             </RelativeLayout>
+
+            <Switch
+                android:id="@+id/swAccident"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/event_accident"
+                android:drawableStart="@drawable/ic_accident_red_600_36dp"
+                android:drawablePadding="8dp"
+                android:theme="@style/CustomDrawerMenuItem" />
+
+            <Switch
+                android:id="@+id/swNaturalDisaster"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/event_natural_disaster"
+                android:drawableStart="@drawable/ic_natural_disaster_amber_800_36dp"
+                android:drawablePadding="8dp"
+                android:theme="@style/CustomDrawerMenuItem" />
+
+            <Switch
+                android:id="@+id/swOther"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/event_other"
+                android:drawableStart="@drawable/ic_other_amber_800_36dp"
+                android:drawablePadding="8dp"
+                android:theme="@style/CustomDrawerMenuItem" />
+
+            <Switch
+                android:id="@+id/swTrafficJam"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/event_traffic_jam"
+                android:drawableStart="@drawable/ic_traffic_jam_orange_800_36dp"
+                android:drawablePadding="8dp"
+                android:theme="@style/CustomDrawerMenuItem" />
 
             <Button
                 android:id="@+id/btnProfile"

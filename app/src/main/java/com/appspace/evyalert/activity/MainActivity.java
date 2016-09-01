@@ -28,7 +28,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -43,8 +45,11 @@ import com.appspace.evyalert.fragment.MapFragment;
 import com.appspace.evyalert.manager.ApiManager;
 import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.util.ChromeCustomTabUtil;
+import com.appspace.evyalert.util.DataStoreUtils;
+import com.appspace.evyalert.util.EventUtil;
 import com.appspace.evyalert.util.Helper;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -59,6 +64,7 @@ import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
+import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -69,7 +75,8 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        EventAdapter.OnEventItemClickCallback {
+        EventAdapter.OnEventItemClickCallback,
+        CompoundButton.OnCheckedChangeListener {
 
     private static final String TAG = "MainActivity";
 
@@ -89,8 +96,13 @@ public class MainActivity extends AppCompatActivity implements
     Toolbar toolbar;
     Button btnProfile;
     ImageView ivProfile;
+    ImageView ivProfileBackground;
     TextView tvUsername;
     Button btnAbout;
+    Switch swAccident;
+    Switch swNaturalDisaster;
+    Switch swOther;
+    Switch swTrafficJam;
 
     FloatingActionButton fabAddEvent;
 
@@ -163,6 +175,28 @@ public class MainActivity extends AppCompatActivity implements
 
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                LoggerUtils.log2D(TAG, "onDrawerClosed");
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
     }
 
     private void initFirebase() {
@@ -218,7 +252,21 @@ public class MainActivity extends AppCompatActivity implements
         btnAbout = (Button) findViewById(R.id.btnAbout);
         btnAbout.setOnClickListener(this);
 
+        swAccident = (Switch) findViewById(R.id.swAccident);
+        swNaturalDisaster = (Switch) findViewById(R.id.swNaturalDisaster);
+        swOther = (Switch) findViewById(R.id.swOther);
+        swTrafficJam = (Switch) findViewById(R.id.swTrafficJam);
+        swAccident.setChecked(DataStoreUtils.getInstance().isAccidentSwitchOn());
+        swNaturalDisaster.setChecked(DataStoreUtils.getInstance().isNaturalDisasterSwitchOn());
+        swOther.setChecked(DataStoreUtils.getInstance().isOtherSwitchOn());
+        swTrafficJam.setChecked(DataStoreUtils.getInstance().isTrafficJamSwitchOn());
+        swAccident.setOnCheckedChangeListener(this);
+        swNaturalDisaster.setOnCheckedChangeListener(this);
+        swOther.setOnCheckedChangeListener(this);
+        swTrafficJam.setOnCheckedChangeListener(this);
+
         ivProfile = (ImageView) findViewById(R.id.ivProfile);
+        ivProfileBackground = (ImageView) findViewById(R.id.ivProfileBackground);
         tvUsername = (TextView) findViewById(R.id.tvUsername);
 
         mProgressDialog = new MaterialDialog.Builder(this)
@@ -379,6 +427,12 @@ public class MainActivity extends AppCompatActivity implements
                 .bitmapTransform(new CropCircleTransformation(Contextor.getInstance().getContext()))
                 .into(ivProfile);
 
+        Glide.with(this)
+                .load(firebaseUser.getPhotoUrl())
+                .bitmapTransform(new BlurTransformation(Contextor.getInstance().getContext(), 10),
+                        new CenterCrop(Contextor.getInstance().getContext()))
+                .into(ivProfileBackground);
+
         tvUsername.setText(firebaseUser.getDisplayName());
     }
 
@@ -522,7 +576,9 @@ public class MainActivity extends AppCompatActivity implements
 
     private void loadEventsLast2Days(int option) {
         Call<Event[]> call = ApiManager.getInstance().getAPIService()
-                .loadEventsLast2Days(String.valueOf(option));
+                .loadEventsLast2Days(
+                        String.valueOf(option),
+                        EventUtil.makeEventFilterString());
         call.enqueue(new Callback<Event[]>() {
             @Override
             public void onResponse(Call<Event[]> call, Response<Event[]> response) {
@@ -544,7 +600,8 @@ public class MainActivity extends AppCompatActivity implements
                 .loadEvents(
                         String.valueOf(option),
                         String.valueOf(mCurrentLocation.getLatitude()),
-                        String.valueOf(mCurrentLocation.getLongitude())
+                        String.valueOf(mCurrentLocation.getLongitude()),
+                        EventUtil.makeEventFilterString()
                 );
         call.enqueue(new Callback<Event[]>() {
             @Override
@@ -566,7 +623,10 @@ public class MainActivity extends AppCompatActivity implements
     private void loadEventsByProvince(int provinceId) {
         LoggerUtils.log2D(TAG, "provinceId: " + provinceId);
         Call<Event[]> call = ApiManager.getInstance().getAPIService()
-                .loadEventsByProvinces("3", String.valueOf(provinceId));
+                .loadEventsByProvinces(
+                        "3",
+                        String.valueOf(provinceId),
+                        EventUtil.makeEventFilterString());
         call.enqueue(new Callback<Event[]>() {
             @Override
             public void onResponse(Call<Event[]> call, Response<Event[]> response) {
@@ -643,6 +703,19 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onEventItemPhotoClickCallback(final Event event, int position) {
         LoggerUtils.log2D(TAG, "onEventItemPhotoClickCallback: " + event.eventUid);
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        if (compoundButton == swAccident) {
+            DataStoreUtils.getInstance().setAccidentSwitch(b);
+        } else if (compoundButton == swNaturalDisaster) {
+            DataStoreUtils.getInstance().setNaturalDisasterSwitch(b);
+        } else if (compoundButton == swOther) {
+            DataStoreUtils.getInstance().setOtherSwitch(b);
+        } else if (compoundButton == swTrafficJam) {
+            DataStoreUtils.getInstance().setTrafficJamSwitch(b);
+        }
     }
 
     public static class PlaceholderFragment extends Fragment {

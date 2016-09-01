@@ -40,18 +40,21 @@ public interface APIService {
     Call<Event[]> loadEvents(
             @Query("filter") String filterOption, // 0, 1
             @Query("lat") String lat,
-            @Query("lng") String lng
+            @Query("lng") String lng,
+            @Query("event_filter") String eventFilter
     );
 
     @GET("service_events.php")
     Call<Event[]> loadEventsLast2Days(
-            @Query("filter") String filterOption // 2
+            @Query("filter") String filterOption, // 2
+            @Query("event_filter") String eventFilter
     );
 
     @GET("service_events.php")
     Call<Event[]> loadEventsByProvinces(
             @Query("filter") String filterOption, // 3
-            @Query("province_id") String provinceId // 3
+            @Query("province_id") String provinceId,
+            @Query("event_filter") String eventFilter
     );
 
     @GET("service_event_delete.php")

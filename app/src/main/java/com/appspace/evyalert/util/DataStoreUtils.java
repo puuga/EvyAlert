@@ -42,6 +42,11 @@ public class DataStoreUtils {
     private static final String KEY_APP_USER_ID = "KEY_APP_USER_ID";
     private static final String KEY_APP_FIRST_RUN = "KEY_APP_FIRST_RUN";
 
+    private static final String KEY_SWITCH_ACCIDENT = "KEY_SWITCH_ACCIDENT";
+    private static final String KEY_SWITCH_NATURAL_DISASTER = "KEY_SWITCH_NATURAL_DISASTER";
+    private static final String KEY_SWITCH_OTHER = "KEY_SWITCH_OTHER";
+    private static final String KEY_SWITCH_TRAFFIC_JAM = "KEY_SWITCH_TRAFFIC_JAM";
+
     // SharedPreferences
     SharedPreferences sharedPref;
     SharedPreferences.Editor editor;
@@ -104,5 +109,45 @@ public class DataStoreUtils {
         editor.putBoolean(KEY_APP_FIRST_RUN, val);
         editor.commit();
         LoggerUtils.getInstance().logI(tag, "KEY_APP_FIRST_RUN: " + val);
+    }
+
+    public boolean isAccidentSwitchOn() {
+        return sharedPref.getBoolean(KEY_SWITCH_ACCIDENT, true);
+    }
+
+    public void setAccidentSwitch(boolean val) {
+        editor.putBoolean(KEY_SWITCH_ACCIDENT, val);
+        editor.commit();
+        LoggerUtils.getInstance().logI(tag, "KEY_SWITCH_ACCIDENT: " + val);
+    }
+
+    public boolean isNaturalDisasterSwitchOn() {
+        return sharedPref.getBoolean(KEY_SWITCH_NATURAL_DISASTER, true);
+    }
+
+    public void setNaturalDisasterSwitch(boolean val) {
+        editor.putBoolean(KEY_SWITCH_NATURAL_DISASTER, val);
+        editor.commit();
+        LoggerUtils.getInstance().logI(tag, "KEY_SWITCH_NATURAL_DISASTER: " + val);
+    }
+
+    public boolean isOtherSwitchOn() {
+        return sharedPref.getBoolean(KEY_SWITCH_OTHER, true);
+    }
+
+    public void setOtherSwitch(boolean val) {
+        editor.putBoolean(KEY_SWITCH_OTHER, val);
+        editor.commit();
+        LoggerUtils.getInstance().logI(tag, "KEY_SWITCH_OTHER: " + val);
+    }
+
+    public boolean isTrafficJamSwitchOn() {
+        return sharedPref.getBoolean(KEY_SWITCH_TRAFFIC_JAM, true);
+    }
+
+    public void setTrafficJamSwitch(boolean val) {
+        editor.putBoolean(KEY_SWITCH_TRAFFIC_JAM, val);
+        editor.commit();
+        LoggerUtils.getInstance().logI(tag, "KEY_SWITCH_TRAFFIC_JAM: " + val);
     }
 }
