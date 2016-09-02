@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by siwaweswongcharoen on 8/10/2016 AD.
  */
-public class Event implements Parcelable{
+public class Event implements Parcelable {
     @SerializedName("id") public String eventUid;
     @SerializedName("user_uid") public String userUid;
     @SerializedName("user_name") public String userName;

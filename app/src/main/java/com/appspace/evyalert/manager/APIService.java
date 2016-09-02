@@ -2,6 +2,7 @@ package com.appspace.evyalert.manager;
 
 
 import com.appspace.evyalert.model.Event;
+import com.appspace.evyalert.model.Province;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -61,4 +62,7 @@ public interface APIService {
     Call<Response<Void>> deleteEvent(
             @Query("event_uid") String eventId
     );
+
+    @GET("service_provinces.php")
+    Call<Province> loadProvince(@Query("id") int provinceId);
 }

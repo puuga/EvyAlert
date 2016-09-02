@@ -23,8 +23,8 @@ android {
         applicationId "com.appspace.evyalert"
         minSdkVersion 17
         targetSdkVersion 24
-        versionCode 95
-        versionName "1.14.3"
+        versionCode 98
+        versionName "1.14.4"
     }
     buildTypes {
         release {

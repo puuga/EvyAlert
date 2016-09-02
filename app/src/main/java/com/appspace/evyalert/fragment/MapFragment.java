@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.R;
 import com.appspace.evyalert.model.Event;
+import com.appspace.evyalert.model.Province;
 import com.appspace.evyalert.util.EventIconUtil;
 import com.appspace.evyalert.util.TimeUtil;
 import com.google.android.gms.maps.CameraUpdate;
@@ -29,6 +30,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.crash.FirebaseCrash;
@@ -158,6 +160,17 @@ public class MapFragment extends Fragment implements
         LoggerUtils.log2D("moveCamera", "moveCameraToLatLng");
         wasFirstLocationFig = true;
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+        googleMap.animateCamera(cameraUpdate);
+    }
+
+    public void moveCameraToProvince(Province province) {
+        LoggerUtils.log2D("moveCamera", "moveCameraToProvince");
+        wasFirstLocationFig = true;
+        LatLngBounds provinceBound = new LatLngBounds(
+                new LatLng(province.boundLatMin, province.boundLngMin),
+                new LatLng(province.boundLatMax, province.boundLngMax));
+        LoggerUtils.log2D("moveCamera", provinceBound.toString());
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(provinceBound, 100);
         googleMap.animateCamera(cameraUpdate);
     }
 

@@ -44,6 +44,7 @@ import com.appspace.evyalert.fragment.EventListFragment;
 import com.appspace.evyalert.fragment.MapFragment;
 import com.appspace.evyalert.manager.ApiManager;
 import com.appspace.evyalert.model.Event;
+import com.appspace.evyalert.model.Province;
 import com.appspace.evyalert.util.ChromeCustomTabUtil;
 import com.appspace.evyalert.util.DataStoreUtils;
 import com.appspace.evyalert.util.EventUtil;
@@ -642,6 +643,22 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onFailure(Call<Event[]> call, Throwable t) {
                 hideProgressDialog();
+                FirebaseCrash.report(t);
+            }
+        });
+
+        Call<Province> call1 = ApiManager.getInstance().getAPIService()
+                .loadProvince(provinceId);
+        call1.enqueue(new Callback<Province>() {
+            @Override
+            public void onResponse(Call<Province> call, Response<Province> response) {
+                Province province = response.body();
+                MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(0);
+                mapFragment.moveCameraToProvince(province);
+            }
+
+            @Override
+            public void onFailure(Call<Province> call, Throwable t) {
                 FirebaseCrash.report(t);
             }
         });
