@@ -117,7 +117,10 @@ public class MainActivity extends AppCompatActivity implements
     boolean isFirstTimeLoadEvent = false;
     float mAcceptableAccuracy;
     int mCurrentFilterOption = 0;
-    boolean didChangeEventFilter = false;
+    boolean didChangeEventFilter1 = false;
+    boolean didChangeEventFilter2 = false;
+    boolean didChangeEventFilter3 = false;
+    boolean didChangeEventFilter4 = false;
 
     Location mFirstTimeLocation;
 
@@ -188,13 +191,19 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onDrawerOpened(View drawerView) {
                 LoggerUtils.log2D(TAG, "onDrawerOpened");
-                didChangeEventFilter = false;
+                didChangeEventFilter1 = false;
+                didChangeEventFilter2 = false;
+                didChangeEventFilter3 = false;
+                didChangeEventFilter4 = false;
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 LoggerUtils.log2D(TAG, "onDrawerClosed");
-                if (didChangeEventFilter)
+                if (didChangeEventFilter1
+                        || didChangeEventFilter2
+                        || didChangeEventFilter3
+                        || didChangeEventFilter4)
                     loadEvent(mCurrentFilterOption);
             }
 
@@ -745,16 +754,16 @@ public class MainActivity extends AppCompatActivity implements
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         if (compoundButton == swAccident) {
             DataStoreUtils.getInstance().setAccidentSwitch(b);
-            didChangeEventFilter = !didChangeEventFilter;
+            didChangeEventFilter1 = !didChangeEventFilter1;
         } else if (compoundButton == swNaturalDisaster) {
             DataStoreUtils.getInstance().setNaturalDisasterSwitch(b);
-            didChangeEventFilter = !didChangeEventFilter;
+            didChangeEventFilter2 = !didChangeEventFilter2;
         } else if (compoundButton == swOther) {
             DataStoreUtils.getInstance().setOtherSwitch(b);
-            didChangeEventFilter = !didChangeEventFilter;
+            didChangeEventFilter3 = !didChangeEventFilter3;
         } else if (compoundButton == swTrafficJam) {
             DataStoreUtils.getInstance().setTrafficJamSwitch(b);
-            didChangeEventFilter = !didChangeEventFilter;
+            didChangeEventFilter4 = !didChangeEventFilter4;
         }
     }
 
