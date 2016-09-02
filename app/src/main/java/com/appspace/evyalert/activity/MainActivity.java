@@ -56,6 +56,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -600,12 +601,14 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
-    private void loadEventsNearBy(int option) {
+    private void loadEventsNearBy(final int option) {
+        final double lat = mCurrentLocation.getLatitude();
+        final double lng = mCurrentLocation.getLongitude();
         Call<Event[]> call = ApiManager.getInstance().getAPIService()
                 .loadEvents(
                         String.valueOf(option),
-                        String.valueOf(mCurrentLocation.getLatitude()),
-                        String.valueOf(mCurrentLocation.getLongitude()),
+                        String.valueOf(lat),
+                        String.valueOf(lng),
                         EventUtil.makeEventFilterString()
                 );
         call.enqueue(new Callback<Event[]>() {
@@ -614,6 +617,18 @@ public class MainActivity extends AppCompatActivity implements
                 hideProgressDialog();
                 Event[] events = response.body();
                 loadDataToView(events);
+                MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(0);
+                LatLng latLng = new LatLng(lat, lng);
+                switch (option) {
+                    case 0:
+                        mapFragment.moveCameraToMyLocation(latLng, 13);
+                        mapFragment.drawCircle(latLng, 20000);
+                        break;
+                    case 1:
+                        mapFragment.moveCameraToMyLocation(latLng, 10);
+                        mapFragment.drawCircle(latLng, 50000);
+                        break;
+                }
             }
 
             @Override

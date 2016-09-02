@@ -29,6 +29,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -55,6 +57,7 @@ public class MapFragment extends Fragment implements
 
     Event[] events;
     Marker[] markers;
+    Circle circle;
 
     public MapFragment() {
         // Required empty public constructor
@@ -156,6 +159,13 @@ public class MapFragment extends Fragment implements
         }
     }
 
+    public void moveCameraToMyLocation(LatLng latLng, int zoom) {
+        LoggerUtils.log2D("moveCamera", "FirstLocationFig");
+        wasFirstLocationFig = true;
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
+        googleMap.animateCamera(cameraUpdate);
+    }
+
     public void moveCameraToLatLng(LatLng latLng) {
         LoggerUtils.log2D("moveCamera", "moveCameraToLatLng");
         wasFirstLocationFig = true;
@@ -184,6 +194,18 @@ public class MapFragment extends Fragment implements
 
         markers[index].showInfoWindow();
         moveCameraToLatLng(markers[index].getPosition());
+    }
+
+    public void drawCircle(LatLng latLng, int radius) {
+        if (googleMap == null) {
+            return;
+        }
+
+        circle = googleMap.addCircle(new CircleOptions()
+                .center(latLng)
+                .radius(radius)
+                .strokeWidth(10)
+                .strokeColor(Color.RED));
     }
 
     public void createMarker(Event[] events) {
