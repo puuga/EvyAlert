@@ -29,26 +29,28 @@
     <string name="default_event_title">Something happen here, be careful.</string>
     <string name="must_select_at_last_1_type">Must select at last 1 type.</string>
     <string name="wait_gps">Please, wait for GPS signal.</string>
+    <string name="comment">Comment</string>
+    <string name="comment_with_number">Comment (%1$d)</string>
 
     <string name="around_me_20">Around me in 20 Km</string>
     <string name="around_me_50">Around me in 50 Km</string>
     <string name="last_2_day">Last 2 days</string>
 
     <!--<string-array name="scope">-->
-        <!--<item>@string/around_me_20</item>-->
-        <!--<item>@string/around_me_50</item>-->
-        <!--<item>@string/last_2_day</item>-->
+    <!--<item>@string/around_me_20</item>-->
+    <!--<item>@string/around_me_50</item>-->
+    <!--<item>@string/last_2_day</item>-->
     <!--</string-array>-->
 
     <!--<string-array name="scope">-->
-        <!--<item>Around me in 20 Km</item>-->
-        <!--<item>Around me in 50 Km</item>-->
-        <!--<item>Last 2 days</item>-->
-        <!--<item>Northern, last 2 days</item>-->
-        <!--<item>Northeastern, last 2 days</item>-->
-        <!--<item>Central, last 2 days</item>-->
-        <!--<item>Eastern, last 2 days</item>-->
-        <!--<item>Southern, last 2 days</item>-->
+    <!--<item>Around me in 20 Km</item>-->
+    <!--<item>Around me in 50 Km</item>-->
+    <!--<item>Last 2 days</item>-->
+    <!--<item>Northern, last 2 days</item>-->
+    <!--<item>Northeastern, last 2 days</item>-->
+    <!--<item>Central, last 2 days</item>-->
+    <!--<item>Eastern, last 2 days</item>-->
+    <!--<item>Southern, last 2 days</item>-->
     <!--</string-array>-->
 
     <string-array name="scope_new">
@@ -325,4 +327,5 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="title_activity_post_event">Post Event</string>
+    <string name="title_activity_event_comment">EventCommentActivity</string>
 </resources>

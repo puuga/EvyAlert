@@ -3,6 +3,7 @@ package com.appspace.evyalert.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,17 +21,17 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class EventListFragment extends Fragment implements EventAdapter.OnEventItemClickCallback {
+public class EventListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "EventListFragment";
+
+    private SwipeRefreshLayout swipeContainer;
 
     MainActivity mainActivity;
 
     Event[] events;
     RecyclerView recyclerView;
     List<Event> eventList;
-
-    private EventAdapter.OnEventItemClickCallback callback;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -57,30 +58,16 @@ public class EventListFragment extends Fragment implements EventAdapter.OnEventI
 
     private void initInstances(View view) {
         mainActivity = (MainActivity) getActivity();
-        callback = mainActivity;
+
+        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        swipeContainer.setColorSchemeResources(R.color.colorPrimary);
+        swipeContainer.setOnRefreshListener(this);
 
         eventList = new ArrayList<>();
-        EventAdapter adapter = new EventAdapter(mainActivity, eventList, this);
+        EventAdapter adapter = new EventAdapter(mainActivity, eventList, mainActivity);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(mainActivity));
         recyclerView.setAdapter(adapter);
-    }
-
-    @Override
-    public void onEventItemClickCallback(Event event, int position) {
-        LoggerUtils.log2D(TAG, "onEventItemClickCallback: " + position);
-        callback.onEventItemClickCallback(event, position);
-    }
-
-    @Override
-    public void onEventItemLongClickCallback(Event event, int position) {
-        LoggerUtils.log2D(TAG, "onEventItemClickCallback: " + position);
-        callback.onEventItemLongClickCallback(event, position);
-    }
-
-    @Override
-    public void onEventItemPhotoClickCallback(Event event, int position) {
-
     }
 
     public void loadDataToRecyclerView(Event[] events) {
@@ -99,5 +86,15 @@ public class EventListFragment extends Fragment implements EventAdapter.OnEventI
     public void reloadRecyclerView() {
         recyclerView.getAdapter().notifyDataSetChanged();
         LoggerUtils.log2D("api", "reloadRecyclerView:OK - ");
+    }
+
+    @Override
+    public void onRefresh() {
+        mainActivity.loadEventWithRecentOption();
+    }
+
+    public void stopLayoutRefresh() {
+        swipeContainer.setRefreshing(false);
+
     }
 }

@@ -21,6 +21,7 @@ public class Event implements Parcelable {
     @SerializedName("lat") public double lat;
     @SerializedName("lng") public double lng;
     @SerializedName("address") public String address;
+    @SerializedName("number_of_comments") public int numberOfComments;
     @SerializedName("created_at_long") public long createdAtLong;
     @SerializedName("created_at") public String createdAt;
     @SerializedName("updated_at") public String updatedAt;
@@ -42,6 +43,7 @@ public class Event implements Parcelable {
         lat = in.readDouble();
         lng = in.readDouble();
         address = in.readString();
+        numberOfComments = in.readInt();
         createdAtLong = in.readLong();
         createdAt = in.readString();
         updatedAt = in.readString();
@@ -61,6 +63,7 @@ public class Event implements Parcelable {
         dest.writeDouble(lat);
         dest.writeDouble(lng);
         dest.writeString(address);
+        dest.writeInt(numberOfComments);
         dest.writeLong(createdAtLong);
         dest.writeString(createdAt);
         dest.writeString(updatedAt);

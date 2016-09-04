@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.R;
+import com.appspace.evyalert.activity.MainActivity;
 import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.model.Province;
 import com.appspace.evyalert.util.EventIconUtil;
@@ -43,7 +44,8 @@ public class MapFragment extends Fragment implements
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener,
-        GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnInfoWindowClickListener {
 
     public static final String TAG = "MapFragment";
 
@@ -96,6 +98,7 @@ public class MapFragment extends Fragment implements
 
         googleMap.setOnMarkerClickListener(this);
         googleMap.setOnMapClickListener(this);
+        googleMap.setOnInfoWindowClickListener(this);
     }
 
     @Override
@@ -292,5 +295,12 @@ public class MapFragment extends Fragment implements
         Event event = events[(int) marker.getTag()];
         LoggerUtils.log2D("onMarkerClick", "event id: " + event.eventUid);
         return false;
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Event event = events[(int) marker.getTag()];
+        LoggerUtils.log2D("onInfoWindowClick", "event id: " + event.eventUid);
+        ((MainActivity) getActivity()).showEventCommentActivity(event);
     }
 }

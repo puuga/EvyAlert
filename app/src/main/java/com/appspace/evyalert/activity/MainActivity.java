@@ -39,7 +39,6 @@ import com.appspace.appspacelibrary.manager.Contextor;
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.BuildConfig;
 import com.appspace.evyalert.R;
-import com.appspace.evyalert.adapter.EventAdapter;
 import com.appspace.evyalert.fragment.EventListFragment;
 import com.appspace.evyalert.fragment.MapFragment;
 import com.appspace.evyalert.manager.ApiManager;
@@ -49,6 +48,7 @@ import com.appspace.evyalert.util.ChromeCustomTabUtil;
 import com.appspace.evyalert.util.DataStoreUtils;
 import com.appspace.evyalert.util.EventUtil;
 import com.appspace.evyalert.util.Helper;
+import com.appspace.evyalert.view.holder.EventHolder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.google.android.gms.common.ConnectionResult;
@@ -56,7 +56,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        EventAdapter.OnEventItemClickCallback,
+        EventHolder.OnEventItemClickCallback,
         CompoundButton.OnCheckedChangeListener {
 
     private static final String TAG = "MainActivity";
@@ -457,6 +459,8 @@ public class MainActivity extends AppCompatActivity implements
 
     public void hideProgressDialog() {
         mProgressDialog.dismiss();
+        EventListFragment eventListFragment = (EventListFragment) mSectionsPagerAdapter.getItem(1);
+        eventListFragment.stopLayoutRefresh();
     }
 
     private void showFilterDialog() {
@@ -570,6 +574,10 @@ public class MainActivity extends AppCompatActivity implements
         if (fragment.isMapReady) {
             fragment.onMyLocationChange(location);
         }
+    }
+
+    public void loadEventWithRecentOption() {
+        loadEvent(mCurrentFilterOption);
     }
 
     public void loadEvent(int option) {
@@ -719,6 +727,12 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
+    public void showEventCommentActivity(Event event) {
+        Intent i = new Intent(this, EventCommentActivity.class);
+        i.putExtra(Helper.KEY_EVENT_ITEM, event);
+        startActivityForResult(i, Helper.EVENT_COMMENT_REQUEST_CODE);
+    }
+
     @Override
     public void onEventItemClickCallback(Event event, int position) {
         LoggerUtils.log2D(TAG, "onEventItemClickCallback: " + event.eventUid);
@@ -743,6 +757,12 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 })
                 .show();
+    }
+
+    @Override
+    public void onEventItemCommentClickCallback(Event event, int position) {
+        LoggerUtils.log2D(TAG, "onEventItemCommentClickCallback: " + event.eventUid);
+        showEventCommentActivity(event);
     }
 
     @Override

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.R;
 import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.util.EventIconUtil;
@@ -18,7 +17,6 @@ import com.appspace.evyalert.view.holder.EventWithImageHolder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.google.android.gms.ads.AdRequest;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -33,17 +31,17 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private Context context;
     private List<Event> eventList;
-    private OnEventItemClickCallback callback;
+    private EventHolder.OnEventItemClickCallback callback;
 
-    public interface OnEventItemClickCallback {
-        void onEventItemClickCallback(Event event, int position);
+//    public interface OnEventItemClickCallback {
+//        void onEventItemClickCallback(Event event, int position);
+//
+//        void onEventItemLongClickCallback(Event event, int position);
+//
+//        void onEventItemPhotoClickCallback(Event event, int position);
+//    }
 
-        void onEventItemLongClickCallback(Event event, int position);
-
-        void onEventItemPhotoClickCallback(Event event, int position);
-    }
-
-    public EventAdapter(Context context, List<Event> eventList, OnEventItemClickCallback callback) {
+    public EventAdapter(Context context, List<Event> eventList, EventHolder.OnEventItemClickCallback callback) {
         this.context = context;
         this.eventList = eventList;
         this.callback = callback;
@@ -58,12 +56,12 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
         int listPosition;
-        if (position ==0)
+        if (position == 0)
             listPosition = position;
         else if (position <= 1)
             listPosition = position;
         else
-            listPosition =  position - 1 - (position / 10);
+            listPosition = position - 1 - (position / 10);
 
         Event event = eventList.get(listPosition);
 
@@ -100,39 +98,43 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (position!=0 && (position == 2 || position%10==0))
+        if (position != 0 && (position == 2 || position % 10 == 0))
             return;
 
         int listPosition;
-        if (position ==0)
+        if (position == 0)
             listPosition = position;
         else if (position <= 1)
             listPosition = position;
         else
-            listPosition =  position - 1 - (position / 10);
+            listPosition = position - 1 - (position / 10);
 
         final Event event = eventList.get(listPosition);
 
         switch (holder.getItemViewType()) {
             case Helper.HOLDER_TYPE_NO_IMAGE:
                 EventHolder holder0 = (EventHolder) holder;
-                setDataToHolder(holder0, event);
+                setDataToHolder(holder0, event, listPosition);
 
-                setOnEventItemClickCallback(holder0, event, listPosition);
-                setOnEventItemLongClickCallback(holder0, event, listPosition);
+//                setOnEventItemClickCallback(holder0, event);
+//                setOnEventItemLongClickCallback(holder0, event);
                 break;
             case Helper.HOLDER_TYPE_IMAGE:
                 EventWithImageHolder holder1 = (EventWithImageHolder) holder;
-                setDataToHolder(holder1, event);
+                setDataToHolder(holder1, event, listPosition);
                 setEventImageToHolder(holder1, event);
 
-                setOnEventItemClickCallback(holder1, event, listPosition);
-                setOnEventItemLongClickCallback(holder1, event, listPosition);
+//                setOnEventItemClickCallback(holder1, event);
+//                setOnEventItemLongClickCallback(holder1, event);
                 break;
         }
     }
 
-    private void setDataToHolder(EventHolder holder, Event event) {
+    private void setDataToHolder(EventHolder holder, Event event, int listPosition) {
+        holder.listPosition = listPosition;
+        holder.callback = callback;
+        holder.event = event;
+
         Glide.with(context)
                 .load(event.userPhotoUrl)
                 .bitmapTransform(new CropCircleTransformation(context), new CenterCrop(context))
@@ -153,6 +155,11 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         holder.ivEventType.setImageResource(eventImageResource);
 
         holder.tvEventTitle.setText(event.title);
+
+        if (event.numberOfComments == 0)
+            holder.btnComment.setText(context.getString(R.string.comment));
+        else
+            holder.btnComment.setText(context.getString(R.string.comment_with_number, event.numberOfComments));
     }
 
     private void setEventImageToHolder(EventWithImageHolder holder, Event event) {
@@ -163,29 +170,29 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 .into(holder.ivEventPhoto);
     }
 
-    private void setOnEventItemClickCallback(EventHolder holder, final Event event, final int adapterPosition) {
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LoggerUtils.log2D(TAG, "onEventItemClickCallback: " + adapterPosition);
-                callback.onEventItemClickCallback(event, adapterPosition);
-            }
-        });
-
-    }
-
-    private void setOnEventItemLongClickCallback(EventHolder holder, final Event event, final int adapterPosition) {
-        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (event.userUid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                    callback.onEventItemLongClickCallback(event, adapterPosition);
-                    return true;
-                }
-                return false;
-            }
-        });
-    }
+//    private void setOnEventItemClickCallback(final EventHolder holder, final Event event) {
+//        holder.cardView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                LoggerUtils.log2D(TAG, "onEventItemClickCallback: " + holder.listPosition);
+//                callback.onEventItemClickCallback(event, holder.listPosition);
+//            }
+//        });
+//
+//    }
+//
+//    private void setOnEventItemLongClickCallback(final EventHolder holder, final Event event) {
+//        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View view) {
+//                if (event.userUid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+//                    callback.onEventItemLongClickCallback(event, holder.listPosition);
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
+//    }
 
     @Override
     public int getItemCount() {
