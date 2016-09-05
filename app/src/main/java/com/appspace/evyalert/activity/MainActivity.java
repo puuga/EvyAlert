@@ -56,9 +56,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -638,11 +636,11 @@ public class MainActivity extends AppCompatActivity implements
                 LatLng latLng = new LatLng(lat, lng);
                 switch (option) {
                     case 0:
-                        mapFragment.moveCameraToMyLocation(latLng, 13);
+                        mapFragment.moveCameraToMyLocation(latLng, 10);
                         mapFragment.drawCircle(latLng, 20000);
                         break;
                     case 1:
-                        mapFragment.moveCameraToMyLocation(latLng, 10);
+                        mapFragment.moveCameraToMyLocation(latLng, 8);
                         mapFragment.drawCircle(latLng, 50000);
                         break;
                 }

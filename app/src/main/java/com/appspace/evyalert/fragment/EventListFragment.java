@@ -29,7 +29,6 @@ public class EventListFragment extends Fragment implements SwipeRefreshLayout.On
 
     MainActivity mainActivity;
 
-    Event[] events;
     RecyclerView recyclerView;
     List<Event> eventList;
 
@@ -94,7 +93,8 @@ public class EventListFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     public void stopLayoutRefresh() {
+        if (swipeContainer == null)
+            return;
         swipeContainer.setRefreshing(false);
-
     }
 }

@@ -1,6 +1,7 @@
 package com.appspace.evyalert.manager;
 
 
+import com.appspace.evyalert.model.Comment;
 import com.appspace.evyalert.model.Event;
 import com.appspace.evyalert.model.Province;
 
@@ -65,4 +66,21 @@ public interface APIService {
 
     @GET("service_provinces.php")
     Call<Province> loadProvince(@Query("id") int provinceId);
+
+    @GET("service_comments_by_event.php")
+    Call<Comment[]> loadComment(@Query("event_id") String eventId);
+
+    @FormUrlEncoded
+    @POST("service_comment_post.php")
+    Call<Comment> postComment(
+            @Field("event_id") String eventId,
+            @Field("comment") String comment,
+            @Field("user_uid") String userUid,
+            @Field("user_name") String userName,
+            @Field("user_photo_url") String userPhotoUrl,
+            @Field("created_at_long") String createdAtLong
+    );
+
+    @GET("service_comment_delete.php")
+    Call<Comment[]> deleteComment(@Query("comment_id") String commentId);
 }

@@ -33,14 +33,6 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private List<Event> eventList;
     private EventHolder.OnEventItemClickCallback callback;
 
-//    public interface OnEventItemClickCallback {
-//        void onEventItemClickCallback(Event event, int position);
-//
-//        void onEventItemLongClickCallback(Event event, int position);
-//
-//        void onEventItemPhotoClickCallback(Event event, int position);
-//    }
-
     public EventAdapter(Context context, List<Event> eventList, EventHolder.OnEventItemClickCallback callback) {
         this.context = context;
         this.eventList = eventList;
@@ -169,30 +161,6 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 .crossFade()
                 .into(holder.ivEventPhoto);
     }
-
-//    private void setOnEventItemClickCallback(final EventHolder holder, final Event event) {
-//        holder.cardView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                LoggerUtils.log2D(TAG, "onEventItemClickCallback: " + holder.listPosition);
-//                callback.onEventItemClickCallback(event, holder.listPosition);
-//            }
-//        });
-//
-//    }
-//
-//    private void setOnEventItemLongClickCallback(final EventHolder holder, final Event event) {
-//        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View view) {
-//                if (event.userUid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-//                    callback.onEventItemLongClickCallback(event, holder.listPosition);
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-//    }
 
     @Override
     public int getItemCount() {

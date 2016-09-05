@@ -12,6 +12,7 @@ public class Helper {
     public static final int HOLDER_TYPE_NO_IMAGE = 0;
     public static final int HOLDER_TYPE_IMAGE = 1;
     public static final int HOLDER_TYPE_ADMOB = 2;
+    public static final int HOLDER_TYPE_COMMENT = 2;
 
     public static final String KEY_EVENT_ITEM = "KEY_EVENT_ITEM";
 
