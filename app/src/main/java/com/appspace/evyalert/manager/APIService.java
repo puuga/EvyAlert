@@ -82,5 +82,5 @@ public interface APIService {
     );
 
     @GET("service_comment_delete.php")
-    Call<Comment[]> deleteComment(@Query("comment_id") String commentId);
+    Call<Response<Void>> deleteComment(@Query("comment_id") String commentId);
 }

@@ -8,6 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.R;
@@ -21,7 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class EventCommentActivityFragment extends Fragment implements
-        SwipeRefreshLayout.OnRefreshListener {
+        SwipeRefreshLayout.OnRefreshListener,
+        View.OnClickListener {
 
     private SwipeRefreshLayout swipeContainer;
 
@@ -30,6 +33,9 @@ public class EventCommentActivityFragment extends Fragment implements
     Event event;
     RecyclerView recyclerView;
     List<Comment> commentList;
+
+    public EditText edtComment;
+    public ImageButton ibPost;
 
     public EventCommentActivityFragment() {
     }
@@ -46,12 +52,18 @@ public class EventCommentActivityFragment extends Fragment implements
         eventCommentActivity = (EventCommentActivity) getActivity();
         event = eventCommentActivity.mEvent;
 
+        edtComment = (EditText) view.findViewById(R.id.edtComment);
+        ibPost = (ImageButton) view.findViewById(R.id.ibPost);
+
+        ibPost.setOnClickListener(this);
+
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setColorSchemeResources(R.color.colorPrimary);
         swipeContainer.setOnRefreshListener(this);
 
         commentList = new ArrayList<>();
-        CommentAdapter adapter = new CommentAdapter(eventCommentActivity, event, commentList);
+        CommentAdapter adapter
+                = new CommentAdapter(eventCommentActivity, event, commentList, eventCommentActivity);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(eventCommentActivity));
         recyclerView.setAdapter(adapter);
@@ -70,6 +82,14 @@ public class EventCommentActivityFragment extends Fragment implements
         LoggerUtils.log2D("api", "loadDataToRecyclerView:OK - " + recyclerView.getAdapter().getItemCount());
     }
 
+    public void clearCommentText() {
+        edtComment.setText("");
+    }
+
+    public void scrollToLastPosition() {
+        recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount());
+    }
+
     @Override
     public void onRefresh() {
         eventCommentActivity.loadComment();
@@ -77,5 +97,14 @@ public class EventCommentActivityFragment extends Fragment implements
 
     public void stopLayoutRefresh() {
         swipeContainer.setRefreshing(false);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view == ibPost) {
+            if (edtComment.getText().toString().equals(""))
+                return;
+            eventCommentActivity.postComment(edtComment.getText().toString());
+        }
     }
 }

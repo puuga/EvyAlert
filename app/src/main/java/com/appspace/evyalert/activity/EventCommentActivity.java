@@ -2,9 +2,11 @@ package com.appspace.evyalert.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.R;
@@ -12,19 +14,28 @@ import com.appspace.evyalert.fragment.EventCommentActivityFragment;
 import com.appspace.evyalert.manager.ApiManager;
 import com.appspace.evyalert.model.Comment;
 import com.appspace.evyalert.model.Event;
+import com.appspace.evyalert.util.ArrayUtil;
 import com.appspace.evyalert.util.Helper;
+import com.appspace.evyalert.util.TimeUtil;
+import com.appspace.evyalert.view.holder.CommentInCommentHolder;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.crash.FirebaseCrash;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class EventCommentActivity extends AppCompatActivity {
+public class EventCommentActivity extends AppCompatActivity implements
+        CommentInCommentHolder.OnCommentItemClickCallback {
     private final String TAG = "EventCommentActivity";
 
     public Event mEvent;
 
     MaterialDialog mProgressDialog;
+
+    boolean mDidChangeComment = false;
+
+    Comment[] mComment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +77,10 @@ public class EventCommentActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Comment[]> call, Response<Comment[]> response) {
                 hideProgressDialog();
+                mDidChangeComment = true;
                 Comment[] comments = response.body();
-                LoggerUtils.log2D(TAG, "comments:"+comments.length);
+                LoggerUtils.log2D(TAG, "comments:" + comments.length);
+                mComment = comments;
                 loadDataToView(comments);
             }
 
@@ -75,7 +88,60 @@ public class EventCommentActivity extends AppCompatActivity {
             public void onFailure(Call<Comment[]> call, Throwable t) {
                 hideProgressDialog();
                 FirebaseCrash.report(t);
-                LoggerUtils.log2D(TAG, t.getMessage());
+            }
+        });
+    }
+
+    public void postComment(String commentString) {
+        showProgressDialog();
+        final EventCommentActivityFragment f = (EventCommentActivityFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.fragment);
+        Call<Comment> call = ApiManager.getInstance().getAPIService()
+                .postComment(
+                        mEvent.eventUid,
+                        commentString,
+                        FirebaseAuth.getInstance().getCurrentUser().getUid(),
+                        FirebaseAuth.getInstance().getCurrentUser().getDisplayName(),
+                        FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString(),
+                        String.valueOf(TimeUtil.getCurrentTime())
+                );
+        call.enqueue(new Callback<Comment>() {
+            @Override
+            public void onResponse(Call<Comment> call, Response<Comment> response) {
+                hideProgressDialog();
+                Comment comment = response.body();
+                mComment = ArrayUtil.append(mComment, comment);
+                loadDataToView(mComment);
+                f.clearCommentText();
+                f.scrollToLastPosition();
+            }
+
+            @Override
+            public void onFailure(Call<Comment> call, Throwable t) {
+                f.clearCommentText();
+                hideProgressDialog();
+                FirebaseCrash.report(t);
+            }
+        });
+    }
+
+    public void deleteComment(Comment comment) {
+        showProgressDialog();
+        Call<Response<Void>> call = ApiManager.getInstance().getAPIService()
+                .deleteComment(String.valueOf(comment.id));
+        call.enqueue(new Callback<Response<Void>>() {
+            @Override
+            public void onResponse(Call<Response<Void>> call, Response<Response<Void>> response) {
+                hideProgressDialog();
+                if (response.code() == 204) {
+                    loadComment();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response<Void>> call, Throwable t) {
+                hideProgressDialog();
+                FirebaseCrash.report(t);
             }
         });
     }
@@ -98,4 +164,31 @@ public class EventCommentActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onCommentItemClickCallback(Comment comment) {
+
+    }
+
+    @Override
+    public void onCommentItemLongClickCallback(final Comment comment) {
+        LoggerUtils.log2D(TAG, "onCommentItemLongClickCallback: " + comment.id);
+        new MaterialDialog.Builder(this)
+                .title(R.string.delete)
+                .content(R.string.delete_confirm)
+                .positiveText(R.string.delete)
+                .negativeText(R.string.cancel)
+                .neutralText(R.string.later)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        deleteComment(comment);
+                    }
+                })
+                .show();
+    }
+
+    @Override
+    public void onUserProfileCommentItemClickCallback(Comment comment) {
+
+    }
 }

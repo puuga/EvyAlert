@@ -193,4 +193,7 @@
         <item>ยะลา</item>
         <item>ยโสธร</item>
     </string-array>
+    <string name="comment">ความเห็น</string>
+    <string name="comment_with_number">ความเห็น (%1$d)</string>
+    <string name="title_activity_event_comment">ความเห็น</string>
 </resources>

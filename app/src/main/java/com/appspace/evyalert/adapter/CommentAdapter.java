@@ -32,11 +32,17 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Event event;
     private Context context;
     private List<Comment> commentList;
+    private CommentInCommentHolder.OnCommentItemClickCallback callback;
 
-    public CommentAdapter(Context context, Event event, List<Comment> commentList) {
+    public CommentAdapter(
+            Context context,
+            Event event,
+            List<Comment> commentList,
+            CommentInCommentHolder.OnCommentItemClickCallback callback) {
         this.event = event;
         this.context = context;
         this.commentList = commentList;
+        this.callback = callback;
     }
 
     @Override
@@ -80,8 +86,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         switch (holder.getItemViewType()) {
             case Helper.HOLDER_TYPE_COMMENT:
                 CommentInCommentHolder holder1 = (CommentInCommentHolder) holder;
-                Comment comment = commentList.get(position-1);
+                Comment comment = commentList.get(position - 1);
                 setDataToCommentHolder(holder1, comment);
+                holder1.callback = callback;
                 break;
         }
     }
@@ -139,7 +146,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         String timeStamp = String.valueOf(DateUtils.getRelativeTimeSpanString(comment.createdAtLong));
         holder.tvTimeStamp.setText(timeStamp);
 
-        holder.tvCommentTitle.setText(comment.comment);;
+        holder.tvCommentTitle.setText(comment.comment);
+        ;
 
     }
 }
