@@ -78,6 +78,8 @@ public class EventCommentActivity extends AppCompatActivity implements
             public void onResponse(Call<Comment[]> call, Response<Comment[]> response) {
                 hideProgressDialog();
                 mDidChangeComment = true;
+                Intent returnIntent = new Intent();
+                setResult(Helper.RESULT_DID_COMMENT, returnIntent);
                 Comment[] comments = response.body();
                 LoggerUtils.log2D(TAG, "comments:" + comments.length);
                 mComment = comments;
@@ -161,16 +163,6 @@ public class EventCommentActivity extends AppCompatActivity implements
         EventCommentActivityFragment f = (EventCommentActivityFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragment);
         f.stopLayoutRefresh();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (mDidChangeComment) {
-            Intent returnIntent = new Intent();
-            setResult(Helper.RESULT_DID_COMMENT, returnIntent);
-        }
     }
 
     @Override
