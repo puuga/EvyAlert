@@ -8,6 +8,7 @@ public class Helper {
     public static final int POST_EVENT_REQUEST_CODE = 102;
     public static final int EVENT_COMMENT_REQUEST_CODE = 103;
     public static final int REQUEST_ACCESS_FINE_LOCATION = 1;
+    public static final int RESULT_DID_COMMENT = 1033;
 
     public static final int HOLDER_TYPE_NO_IMAGE = 0;
     public static final int HOLDER_TYPE_IMAGE = 1;

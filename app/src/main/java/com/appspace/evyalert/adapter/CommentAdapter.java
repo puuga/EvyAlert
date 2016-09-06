@@ -73,6 +73,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 EventWithImageInCommentHolder holder1 = new EventWithImageInCommentHolder(itemView);
                 setDataToEventHolder(holder1, event);
                 setEventImageToEventHolder(holder1, event);
+                return holder1;
             case Helper.HOLDER_TYPE_COMMENT:
                 itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.holder_comment_in_comment, parent, false);

@@ -392,6 +392,11 @@ public class MainActivity extends AppCompatActivity implements
                 Snackbar.make(fabAddEvent, "CANCELED", Snackbar.LENGTH_SHORT)
                         .show();
             }
+        } else if (requestCode == Helper.EVENT_COMMENT_REQUEST_CODE) {
+            if (resultCode == Helper.RESULT_DID_COMMENT) {
+                LoggerUtils.log2D(TAG, "EVENT_COMMENT_REQUEST_CODE - RESULT_DID_COMMENT");
+                loadEventWithRecentOption();
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

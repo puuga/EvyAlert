@@ -163,6 +163,15 @@ public class EventCommentActivity extends AppCompatActivity implements
         f.stopLayoutRefresh();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mDidChangeComment) {
+            Intent returnIntent = new Intent();
+            setResult(Helper.RESULT_DID_COMMENT, returnIntent);
+        }
+    }
 
     @Override
     public void onCommentItemClickCallback(Comment comment) {
