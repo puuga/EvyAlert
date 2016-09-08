@@ -21,7 +21,7 @@
     <string name="profile">Profile</string>
     <string name="about">About</string>
     <string name="progressing">progressing…</string>
-    <string name="filter_events">Filter events</string>
+    <string name="filter_events">Filter events \n(%1$s)</string>
     <string name="display_events">Display events</string>
     <string name="image_from_camera">Camera</string>
     <string name="image_from_gallery">Gallery</string>
@@ -30,7 +30,7 @@
     <string name="must_select_at_last_1_type">Must select at last 1 type.</string>
     <string name="wait_gps">Please, wait for GPS signal.</string>
     <string name="comment">Comment</string>
-    <string name="comment_with_number">Comment (%1$d)</string>
+    <string name="comment_with_number">Comment </string>
 
     <string name="around_me_20">Around me in 20 Km</string>
     <string name="around_me_50">Around me in 50 Km</string>

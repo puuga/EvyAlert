@@ -467,8 +467,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void showFilterDialog() {
+        String currentFilter = getResources()
+                .getStringArray(R.array.scope_new)[mCurrentFilterOption];
         new MaterialDialog.Builder(this)
-                .title(R.string.filter_events)
+                .title(getString(R.string.filter_events, currentFilter))
                 .items(R.array.scope_new)
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
