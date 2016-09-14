@@ -24,47 +24,47 @@
 
             <ToggleButton
                 android:id="@+id/toggleAccident"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                style="?android:attr/borderlessButtonStyle"
-                android:textOff="@string/event_accident"
-                android:textOn="@string/event_accident"
+                android:drawableTop="@drawable/toggle_ic_accident"
                 android:textColor="@color/toggle_text_color"
-                android:drawableTop="@drawable/toggle_ic_accident" />
+                android:textOff="@string/event_accident"
+                android:textOn="@string/event_accident" />
 
             <ToggleButton
                 android:id="@+id/toggleNaturalDisaster"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                style="?android:attr/borderlessButtonStyle"
-                android:textOff="@string/event_natural_disaster"
-                android:textOn="@string/event_natural_disaster"
+                android:drawableTop="@drawable/toggle_ic_natural_disaster"
                 android:textColor="@color/toggle_text_color"
-                android:drawableTop="@drawable/toggle_ic_natural_disaster" />
+                android:textOff="@string/event_natural_disaster"
+                android:textOn="@string/event_natural_disaster" />
 
             <ToggleButton
                 android:id="@+id/toggleOther"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                style="?android:attr/borderlessButtonStyle"
-                android:textOff="@string/event_other"
-                android:textOn="@string/event_other"
+                android:drawableTop="@drawable/toggle_ic_other"
                 android:textColor="@color/toggle_text_color"
-                android:drawableTop="@drawable/toggle_ic_other" />
+                android:textOff="@string/event_other"
+                android:textOn="@string/event_other" />
 
             <ToggleButton
                 android:id="@+id/toggleTrafficJam"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                style="?android:attr/borderlessButtonStyle"
-                android:textOff="@string/event_traffic_jam"
-                android:textOn="@string/event_traffic_jam"
+                android:drawableTop="@drawable/toggle_ic_traffic_jam"
                 android:textColor="@color/toggle_text_color"
-                android:drawableTop="@drawable/toggle_ic_traffic_jam" />
+                android:textOff="@string/event_traffic_jam"
+                android:textOn="@string/event_traffic_jam" />
         </LinearLayout>
 
         <ImageView
@@ -104,15 +104,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/ivIcEventProvince"
-            android:layout_marginBottom="32dp"
             android:layout_toEndOf="@id/ivIcEventProvince" />
 
+        <TextView
+            android:id="@+id/tvDistanceError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/spnProvince"
+            android:layout_below="@+id/spnProvince"
+            android:layout_marginStart="8dp"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/warning_color" />
 
         <ImageView
             android:id="@+id/ivIcEventPhoto"
             android:layout_width="@dimen/icon_size_post"
             android:layout_height="@dimen/icon_size_post"
-            android:layout_below="@id/spnProvince"
+            android:layout_below="@id/tvDistanceError"
+            android:layout_marginTop="32dp"
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_photo_camera_grey_500_36dp" />
 
@@ -126,6 +136,7 @@
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:src="@drawable/image_placeholder_grey_500" />
+
     </RelativeLayout>
 
 </ScrollView>

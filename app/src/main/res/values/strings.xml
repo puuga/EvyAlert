@@ -31,6 +31,7 @@
     <string name="wait_gps">Please, wait for GPS signal.</string>
     <string name="comment">Comment</string>
     <string name="comment_with_number">Comment </string>
+    <string name="too_far">%1$s is too far from current location.</string>
 
     <string name="around_me_20">Around me in 20 Km</string>
     <string name="around_me_50">Around me in 50 Km</string>

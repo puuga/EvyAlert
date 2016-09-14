@@ -196,4 +196,5 @@
     <string name="comment">ความเห็น</string>
     <string name="comment_with_number">ความเห็น (%1$d)</string>
     <string name="title_activity_event_comment">ความเห็น</string>
+    <string name="too_far">%1$s อยู่ไกลจากตำแหน่งปัจจุบันมาก.</string>
 </resources>

@@ -61,7 +61,6 @@ public class PostEventActivity extends AppCompatActivity
     private final int REQUEST_WRITE_EXTERNAL_STORAGE = 2;
 
     public static final String EDIT_MODE = "EDIT_MODE";
-    public static final int UPDATE_EVENT_REQUEST = 22;
 
     public Boolean isEditEvent = false;
     public Event event;
@@ -79,8 +78,8 @@ public class PostEventActivity extends AppCompatActivity
     private FirebaseStorage mStorage;
     private StorageReference mImageStorageRef;
 
-    double latitude;
-    double longitude;
+    public double latitude;
+    public double longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

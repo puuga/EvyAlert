@@ -11,11 +11,14 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.R;
 import com.appspace.evyalert.activity.PostEventActivity;
+import com.appspace.evyalert.model.ProvinceCentroid;
+import com.appspace.evyalert.util.DistanceUtil;
 import com.bumptech.glide.Glide;
 
 /**
@@ -33,6 +36,7 @@ public class PostEventActivityFragment extends Fragment implements
     public TextInputEditText edtEventTitle;
     public ImageView ivEventImage;
     public Spinner spnProvince;
+    public TextView tvDistanceError;
 
     public int eventTypeIndex = -1;
     public int provinceIndex = 0;
@@ -57,6 +61,7 @@ public class PostEventActivityFragment extends Fragment implements
         edtEventTitle = (TextInputEditText) view.findViewById(R.id.edtEventTitle);
         ivEventImage = (ImageView) view.findViewById(R.id.ivEventImage);
         spnProvince = (Spinner) view.findViewById(R.id.spnProvince);
+        tvDistanceError = (TextView) view.findViewById(R.id.tvDistanceError);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.province, android.R.layout.simple_spinner_item);
@@ -130,6 +135,22 @@ public class PostEventActivityFragment extends Fragment implements
         didSelectedProvince = true;
         LoggerUtils.log2D("onItemSelected", String.valueOf(i));
         LoggerUtils.log2D("onItemSelected", adapterView.getItemAtPosition(i).toString());
+
+        PostEventActivity activity = (PostEventActivity) getActivity();
+        double latitude = activity.latitude;
+        double longitude = activity.longitude;
+        ProvinceCentroid centroid = DistanceUtil.getInstance().provinceCentroids[provinceIndex];
+
+        float distance = DistanceUtil.getInstance().distanceBetween(latitude, longitude, centroid);
+        boolean isTooFar = DistanceUtil.getInstance().isTooFar(distance);
+        LoggerUtils.log2D("distance", String.valueOf(isTooFar));
+        if (isTooFar) {
+            String text = getString(R.string.too_far, adapterView.getItemAtPosition(i).toString());
+            tvDistanceError.setText(text);
+        } else {
+            tvDistanceError.setText("");
+        }
+
     }
 
     @Override
