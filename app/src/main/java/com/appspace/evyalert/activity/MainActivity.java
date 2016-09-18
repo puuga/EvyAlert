@@ -22,6 +22,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -252,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements
 //                            Toast.makeText(MainActivity.this, "Fetch Failed",
 //                                    Toast.LENGTH_SHORT).show();
                             LoggerUtils.log2D("RemoteConfig", "Fetch Failed");
+                            FirebaseCrash.logcat(Log.ERROR, TAG, "Fetch Remote Config Failed");
                             FirebaseCrash.report(new Exception("Fetch Remote Config Failed"));
                         }
                     }
@@ -523,6 +525,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         LoggerUtils.log2D("GoogleApiClient", "onConnectionFailed");
+        FirebaseCrash.logcat(Log.ERROR, TAG, "onGoogleServiceConnectionFailed");
         FirebaseCrash.report(new Exception(connectionResult.getErrorMessage()));
     }
 
@@ -618,6 +621,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onFailure(Call<Event[]> call, Throwable t) {
                 hideProgressDialog();
+                FirebaseCrash.logcat(Log.ERROR, TAG, "loadEventsLast2Days");
                 FirebaseCrash.report(t);
             }
         });
@@ -656,6 +660,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onFailure(Call<Event[]> call, Throwable t) {
                 hideProgressDialog();
+                FirebaseCrash.logcat(Log.ERROR, TAG, "loadEventsNearBy");
                 FirebaseCrash.report(t);
             }
         });
@@ -680,6 +685,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onFailure(Call<Event[]> call, Throwable t) {
                 hideProgressDialog();
+                FirebaseCrash.logcat(Log.ERROR, TAG, "loadEventsByProvince");
                 FirebaseCrash.report(t);
             }
         });
@@ -727,6 +733,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onFailure(Call<Response<Void>> call, Throwable t) {
                 hideProgressDialog();
+                FirebaseCrash.logcat(Log.ERROR, TAG, "deleteEvent");
                 FirebaseCrash.report(t);
             }
         });

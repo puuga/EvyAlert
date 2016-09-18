@@ -18,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -54,6 +55,8 @@ import retrofit2.Response;
 
 public class PostEventActivity extends AppCompatActivity
         implements PhotoSelectBottomSheetDialogFragment.OnBottomSheetItemClickListener {
+
+    private static final String TAG = "PostEventActivity";
 
     private final int PICK_IMAGE_REQUEST = 1;
     private final int REQUEST_TAKE_PHOTO = 2;
@@ -196,6 +199,7 @@ public class PostEventActivity extends AppCompatActivity
                     }
                 } catch (NullPointerException e) {
                     mProgressDialog.dismiss();
+                    FirebaseCrash.logcat(Log.ERROR, TAG, "realPathFromURI");
                     FirebaseCrash.report(e);
                 }
             }
@@ -231,6 +235,7 @@ public class PostEventActivity extends AppCompatActivity
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            FirebaseCrash.logcat(Log.ERROR, TAG, "uploadTask event photo");
                             FirebaseCrash.report(e);
                         }
                     })
@@ -299,6 +304,7 @@ public class PostEventActivity extends AppCompatActivity
 
             @Override
             public void onFailure(Call<Event> call, Throwable t) {
+                FirebaseCrash.logcat(Log.ERROR, TAG, "doPostEvent");
                 FirebaseCrash.report(t);
                 LoggerUtils.log2D("api", "postEvent onFailure: " + t.getMessage());
 
