@@ -21,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.appspace.appspacelibrary.util.LoggerUtils;
@@ -65,7 +66,8 @@ public class PostEventActivity extends AppCompatActivity
 
     public static final String EDIT_MODE = "EDIT_MODE";
 
-    public Boolean isEditEvent = false;
+    public boolean isEditEvent = false;
+    public boolean canPostEvent = false;
     public Event event;
     String mCurrentPhotoPath;
     Uri mCurrentUri;
@@ -166,6 +168,15 @@ public class PostEventActivity extends AppCompatActivity
         LoggerUtils.log2D("PostEventActivity", "postEvent");
         PostEventActivityFragment fragment = (PostEventActivityFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment);
+
+        if (!canPostEvent) {
+            LoggerUtils.log2D("PostEventActivity", "!canPostEvent");
+            mProgressDialog.dismiss();
+            InputMethodManager manager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+            manager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+            fragment.focusOnSpnProvince();
+            return;
+        }
 
         final String title = fragment.edtEventTitle.getText().toString();
 

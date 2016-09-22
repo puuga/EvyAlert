@@ -122,6 +122,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         holder.ivEventType.setImageResource(eventImageResource);
 
         holder.tvEventTitle.setText(event.title);
+
+        String province = context.getResources()
+                .getStringArray(R.array.province)[Integer.parseInt(event.provinceIndex)];
+        holder.tvProvince.setText(province);
     }
 
     private void setEventImageToEventHolder(EventWithImageInCommentHolder holder, Event event) {

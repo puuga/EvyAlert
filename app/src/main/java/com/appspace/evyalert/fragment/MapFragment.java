@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.text.format.DateUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -248,11 +249,16 @@ public class MapFragment extends Fragment implements
 
             Marker marker = null;
             try {
+                int provinceIndex = Integer.parseInt(event.provinceIndex);
+                String timeStamp = String.valueOf(DateUtils.getRelativeTimeSpanString(event.createdAtLong));
+                String snippet = event.title + "\n"
+                        + getActivity().getResources().getStringArray(R.array.province)[provinceIndex]
+                        + ": " + timeStamp;
                 marker = googleMap.addMarker(
                         new MarkerOptions()
                                 .position(latLng)
                                 .title("@" + event.userName)
-                                .snippet(event.title + "\n" + TimeUtil.timpStampFormater(event.createdAtLong))
+                                .snippet(snippet)
                                 .icon(BitmapDescriptorFactory
                                         .fromResource(EventIconUtil.eventColorIcons[eventTypeIndex]))
                 );

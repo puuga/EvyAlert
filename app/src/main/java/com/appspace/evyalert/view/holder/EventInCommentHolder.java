@@ -23,6 +23,7 @@ public class EventInCommentHolder extends RecyclerView.ViewHolder {
     public TextView tvEventTitle;
     public ImageView ivEventType;
     public TextView tvEventType;
+    public TextView tvProvince;
 
     public int listPosition;
     public Event event;
@@ -37,6 +38,7 @@ public class EventInCommentHolder extends RecyclerView.ViewHolder {
         tvEventTitle = (TextView) itemView.findViewById(R.id.tvEventTitle);
         ivEventType = (ImageView) itemView.findViewById(R.id.ivEventType);
         tvEventType = (TextView) itemView.findViewById(R.id.tvEventType);
+        tvProvince = (TextView) itemView.findViewById(R.id.tvProvince);
     }
 
     public interface OnEventItemClickCallback {

@@ -148,6 +148,10 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         holder.tvEventTitle.setText(event.title);
 
+        String province = context.getResources()
+                .getStringArray(R.array.province)[Integer.parseInt(event.provinceIndex)];
+        holder.tvProvince.setText(province);
+
         if (event.numberOfComments == 0)
             holder.btnComment.setText(context.getString(R.string.comment));
         else

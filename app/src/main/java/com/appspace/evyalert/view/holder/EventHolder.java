@@ -28,6 +28,7 @@ public class EventHolder extends RecyclerView.ViewHolder implements
     public TextView tvEventTitle;
     public ImageView ivEventType;
     public TextView tvEventType;
+    public TextView tvProvince;
     public Button btnComment;
 
     public int listPosition;
@@ -44,6 +45,7 @@ public class EventHolder extends RecyclerView.ViewHolder implements
         tvEventTitle = (TextView) itemView.findViewById(R.id.tvEventTitle);
         ivEventType = (ImageView) itemView.findViewById(R.id.ivEventType);
         tvEventType = (TextView) itemView.findViewById(R.id.tvEventType);
+        tvProvince = (TextView) itemView.findViewById(R.id.tvProvince);
         btnComment = (Button) itemView.findViewById(R.id.btnComment);
 
         itemView.setOnClickListener(this);

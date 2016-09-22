@@ -19,6 +19,7 @@ import com.appspace.evyalert.R;
 import com.appspace.evyalert.activity.PostEventActivity;
 import com.appspace.evyalert.model.ProvinceCentroid;
 import com.appspace.evyalert.util.DistanceUtil;
+import com.appspace.evyalert.util.ViewBlinkingUtil;
 import com.bumptech.glide.Glide;
 
 /**
@@ -92,6 +93,11 @@ public class PostEventActivityFragment extends Fragment implements
         }
     }
 
+    public void focusOnSpnProvince() {
+        ViewBlinkingUtil.blinking(tvDistanceError);
+        spnProvince.performClick();
+    }
+
     @Override
     public void onClick(View view) {
         if (view == ivEventImage) {
@@ -146,9 +152,12 @@ public class PostEventActivityFragment extends Fragment implements
         LoggerUtils.log2D("distance", String.valueOf(isTooFar));
         if (isTooFar) {
             String text = getString(R.string.too_far, adapterView.getItemAtPosition(i).toString());
+            ViewBlinkingUtil.blinking(tvDistanceError);
             tvDistanceError.setText(text);
+            activity.canPostEvent = false;
         } else {
             tvDistanceError.setText("");
+            activity.canPostEvent = true;
         }
 
     }

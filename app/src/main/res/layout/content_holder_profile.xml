@@ -19,7 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/ivProfile"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_toEndOf="@+id/ivProfile"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -30,6 +29,16 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@id/tvUsername"
         android:layout_below="@id/tvUsername"
+        android:layout_marginTop="8dp"
+        android:text="Small Text"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/tvProvince"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/tvTimeStamp"
+        android:layout_below="@id/tvTimeStamp"
         android:layout_marginTop="8dp"
         android:text="Small Text"
         android:textAppearance="?android:attr/textAppearanceSmall" />
