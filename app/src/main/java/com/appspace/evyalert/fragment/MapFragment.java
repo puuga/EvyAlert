@@ -252,7 +252,7 @@ public class MapFragment extends Fragment implements
                 int provinceIndex = Integer.parseInt(event.provinceIndex);
                 String timeStamp = String.valueOf(DateUtils.getRelativeTimeSpanString(event.createdAtLong));
                 String snippet = event.title + "\n"
-                        + getActivity().getResources().getStringArray(R.array.province)[provinceIndex]
+                        + getActivity().getResources().getStringArray(R.array.province)[provinceIndex-1]
                         + ": " + timeStamp;
                 marker = googleMap.addMarker(
                         new MarkerOptions()

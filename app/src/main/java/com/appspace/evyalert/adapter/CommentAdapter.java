@@ -124,7 +124,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         holder.tvEventTitle.setText(event.title);
 
         String province = context.getResources()
-                .getStringArray(R.array.province)[Integer.parseInt(event.provinceIndex)];
+                .getStringArray(R.array.province)[Integer.parseInt(event.provinceIndex)-1];
         holder.tvProvince.setText(province);
     }
 
