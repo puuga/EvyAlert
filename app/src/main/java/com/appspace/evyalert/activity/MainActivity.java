@@ -123,6 +123,9 @@ public class MainActivity extends AppCompatActivity implements
     boolean didChangeEventFilter3 = false;
     boolean didChangeEventFilter4 = false;
 
+    Event recentPostedEvent;
+    boolean didPostEvent;
+
     Location mFirstTimeLocation;
 
     @Override
@@ -388,11 +391,16 @@ public class MainActivity extends AppCompatActivity implements
                 Event event = data.getParcelableExtra(Helper.MODEL_EVENT_KEY);
                 Snackbar.make(fabAddEvent, "Event posted", Snackbar.LENGTH_SHORT)
                         .show();
-                loadEvent(mCurrentFilterOption);
+//                loadEvent(mCurrentFilterOption);
+                // TODO: focus on recent post
+                didPostEvent = true;
+                recentPostedEvent = event;
+                loadEvent(2);
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 LoggerUtils.log2D(TAG, "POST_MESSAGE_REQUEST - CANCELED");
                 Snackbar.make(fabAddEvent, "CANCELED", Snackbar.LENGTH_SHORT)
                         .show();
+                didPostEvent = false;
             }
         } else if (requestCode == Helper.EVENT_COMMENT_REQUEST_CODE) {
             if (resultCode == Helper.RESULT_DID_COMMENT) {
@@ -713,6 +721,11 @@ public class MainActivity extends AppCompatActivity implements
 
         MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(0);
         mapFragment.createMarker(events);
+
+        if (didPostEvent) {
+            mViewPager.setCurrentItem(0, true);
+            mapFragment.focusOnMarker(recentPostedEvent);
+        }
     }
 
     private void deleteEvent(Event event) {

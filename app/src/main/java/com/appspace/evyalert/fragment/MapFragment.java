@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.Gravity;
@@ -198,6 +199,19 @@ public class MapFragment extends Fragment implements
 
         markers[index].showInfoWindow();
         moveCameraToLatLng(markers[index].getPosition());
+    }
+
+    public void focusOnMarker(@NonNull Event event) {
+        if (googleMap == null) {
+            return;
+        }
+
+        for (int i=0; i<events.length; i++) {
+            if (event.eventUid.equals(events[i].eventUid)) {
+                focusOnMarker(i);
+                break;
+            }
+        }
     }
 
     public void drawCircle(LatLng latLng, int radius) {
