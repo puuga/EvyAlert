@@ -98,6 +98,13 @@ public class PostEventActivityFragment extends Fragment implements
         spnProvince.performClick();
     }
 
+    private void setEventButtonToNornalState() {
+        toggleAccident.setChecked(false);
+        toggleNaturalDisaster.setChecked(false);
+        toggleOther.setChecked(false);
+        toggleTrafficJam.setChecked(false);
+    }
+
     @Override
     public void onClick(View view) {
         if (view == ivEventImage) {
@@ -108,26 +115,26 @@ public class PostEventActivityFragment extends Fragment implements
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if (compoundButton == toggleAccident && b) {
-            eventTypeIndex = 0;
+        if (compoundButton == toggleAccident) {
+            eventTypeIndex = b ? 0 : -1;
 
             toggleNaturalDisaster.setChecked(false);
             toggleOther.setChecked(false);
             toggleTrafficJam.setChecked(false);
-        } else if (compoundButton == toggleNaturalDisaster && b) {
-            eventTypeIndex = 1;
+        } else if (compoundButton == toggleNaturalDisaster) {
+            eventTypeIndex = b ? 1 : -1;
 
             toggleAccident.setChecked(false);
             toggleOther.setChecked(false);
             toggleTrafficJam.setChecked(false);
-        } else if (compoundButton == toggleOther && b) {
-            eventTypeIndex = 2;
+        } else if (compoundButton == toggleOther) {
+            eventTypeIndex = b ? 2 : -1;
 
             toggleAccident.setChecked(false);
             toggleNaturalDisaster.setChecked(false);
             toggleTrafficJam.setChecked(false);
         } else if (compoundButton == toggleTrafficJam) {
-            eventTypeIndex = 3;
+            eventTypeIndex = b ? 3 : -1;
 
             toggleAccident.setChecked(false);
             toggleNaturalDisaster.setChecked(false);
