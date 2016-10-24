@@ -16,15 +16,15 @@ repositories {
 
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '24.0.3'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.appspace.evyalert"
         minSdkVersion 17
-        targetSdkVersion 24
-        versionCode 128
-        versionName "1.15.14"
+        targetSdkVersion 25
+        versionCode 129
+        versionName "1.15.15"
     }
     buildTypes {
         release {
@@ -49,18 +49,18 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.3@aar') {
         transitive = true;
     }
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.google.firebase:firebase-core:9.6.1'
-    compile 'com.google.firebase:firebase-auth:9.6.1'
-    compile 'com.google.firebase:firebase-config:9.6.1'
-    compile 'com.google.firebase:firebase-crash:9.6.1'
-    compile 'com.google.firebase:firebase-database:9.6.1'
-    compile 'com.google.firebase:firebase-storage:9.6.1'
-    compile 'com.google.firebase:firebase-ads:9.6.1'
-    compile 'com.google.android.gms:play-services-location:9.6.1'
-    compile 'com.google.android.gms:play-services-maps:9.6.1'
+    compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.android.support:design:25.0.0'
+    compile 'com.android.support:support-v4:25.0.0'
+    compile 'com.google.firebase:firebase-core:9.8.00'
+    compile 'com.google.firebase:firebase-auth:9.8.00'
+    compile 'com.google.firebase:firebase-config:9.8.00'
+    compile 'com.google.firebase:firebase-crash:9.8.00'
+    compile 'com.google.firebase:firebase-database:9.8.00'
+    compile 'com.google.firebase:firebase-storage:9.8.00'
+    compile 'com.google.firebase:firebase-ads:9.8.00'
+    compile 'com.google.android.gms:play-services-location:9.8.00'
+    compile 'com.google.android.gms:play-services-maps:9.8.00'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
