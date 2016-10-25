@@ -23,8 +23,8 @@ android {
         applicationId "com.appspace.evyalert"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 129
-        versionName "1.15.15"
+        versionCode 130
+        versionName "1.15.16"
     }
     buildTypes {
         release {
@@ -52,15 +52,16 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.0.0'
     compile 'com.android.support:design:25.0.0'
     compile 'com.android.support:support-v4:25.0.0'
-    compile 'com.google.firebase:firebase-core:9.8.00'
-    compile 'com.google.firebase:firebase-auth:9.8.00'
-    compile 'com.google.firebase:firebase-config:9.8.00'
-    compile 'com.google.firebase:firebase-crash:9.8.00'
-    compile 'com.google.firebase:firebase-database:9.8.00'
-    compile 'com.google.firebase:firebase-storage:9.8.00'
-    compile 'com.google.firebase:firebase-ads:9.8.00'
-    compile 'com.google.android.gms:play-services-location:9.8.00'
-    compile 'com.google.android.gms:play-services-maps:9.8.00'
+    compile 'com.android.support:customtabs:25.0.0'
+    compile 'com.google.firebase:firebase-core:9.8.0'
+    compile 'com.google.firebase:firebase-auth:9.8.0'
+    compile 'com.google.firebase:firebase-config:9.8.0'
+    compile 'com.google.firebase:firebase-crash:9.8.0'
+    compile 'com.google.firebase:firebase-database:9.8.0'
+    compile 'com.google.firebase:firebase-storage:9.8.0'
+    compile 'com.google.firebase:firebase-ads:9.8.0'
+    compile 'com.google.android.gms:play-services-location:9.8.0'
+    compile 'com.google.android.gms:play-services-maps:9.8.0'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'

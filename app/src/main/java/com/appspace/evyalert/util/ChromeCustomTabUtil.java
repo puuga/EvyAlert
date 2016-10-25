@@ -1,9 +1,9 @@
 package com.appspace.evyalert.util;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 
 import com.appspace.appspacelibrary.util.LoggerUtils;
 import com.appspace.evyalert.R;
@@ -12,7 +12,7 @@ import com.appspace.evyalert.R;
  * Created by siwaweswongcharoen on 8/10/2016 AD.
  */
 public class ChromeCustomTabUtil {
-    public static void open(Activity context, String url) {
+    public static void open(AppCompatActivity context, String url) {
         LoggerUtils.log2D("Chrome_url", url);
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary));
