@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">EvyAlert</string>
+    <string name="app_name">EvyAlerts</string>
     <string name="about">เกี่ยวกับ</string>
     <string name="action_filters">กรอง</string>
     <string name="action_post">โพส</string>

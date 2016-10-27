@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">EvyAlert</string>
+    <string name="app_name">EvyAlerts</string>
     <string name="action_settings">Settings</string>
     <string name="action_filters">Filters</string>
     <string name="action_post">Post</string>
@@ -322,7 +322,7 @@
     </string-array>
 
     <string name="title_activity_login">Login</string>
-    <string name="title_activity_main" translatable="false">EvyAlert</string>
+    <string name="title_activity_main" translatable="false">EvyAlerts</string>
     <string name="section_format" translatable="false">Hello World from section: %1$d</string>
 
     <!-- TODO: Remove or change this placeholder text -->

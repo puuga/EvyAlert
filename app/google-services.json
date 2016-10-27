@@ -36,6 +36,37 @@
           "status": 2
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:44826198969:android:c5f25fabe9e3a595",
+        "android_client_info": {
+          "package_name": "com.appspace.evyalerts"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "44826198969-s26flm749m1q15pf7ee4nd1jtrh0peej.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCzl9VHz1F_i5PgN6UvjZDWJEGUORU8i8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
     }
   ],
   "configuration_version": "1"
