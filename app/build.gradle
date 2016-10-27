@@ -23,8 +23,8 @@ android {
         applicationId "com.appspace.evyalerts"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 134
-        versionName "1.16.2"
+        versionCode 135
+        versionName "1.16.3"
     }
     buildTypes {
         release {
@@ -46,7 +46,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile project(path: ':appspacelibrary')
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.3@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }
     compile 'com.android.support:appcompat-v7:25.0.0'
