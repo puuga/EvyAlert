@@ -5,11 +5,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -37,6 +39,9 @@ import com.appspace.evyalerts.util.GeocoderUtil;
 import com.appspace.evyalerts.util.Helper;
 import com.appspace.evyalerts.util.ImageUtil;
 import com.appspace.evyalerts.util.TimeUtil;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -54,8 +59,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PostEventActivity extends AppCompatActivity
-        implements PhotoSelectBottomSheetDialogFragment.OnBottomSheetItemClickListener {
+public class PostEventActivity extends AppCompatActivity implements
+        PhotoSelectBottomSheetDialogFragment.OnBottomSheetItemClickListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "PostEventActivity";
 
@@ -71,6 +78,8 @@ public class PostEventActivity extends AppCompatActivity
     public Event event;
     String mCurrentPhotoPath;
     Uri mCurrentUri;
+
+    private GoogleApiClient mGoogleApiClient;
 
     CoordinatorLayout container;
     Toolbar toolbar;
@@ -93,11 +102,25 @@ public class PostEventActivity extends AppCompatActivity
 
         getExtra();
         initInstances();
+        initGoogleApiClient();
         initFirebase();
+    }
+
+    @Override
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
     }
 
     private void getExtra() {
         Intent intent = getIntent();
+
         if (intent.hasExtra(EDIT_MODE)) {
 
             isEditEvent = true;
@@ -128,6 +151,16 @@ public class PostEventActivity extends AppCompatActivity
                 .autoDismiss(false)
                 .progress(true, 0)
                 .build();
+    }
+
+    private void initGoogleApiClient() {
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
     }
 
     private void initFirebase() {
@@ -190,7 +223,7 @@ public class PostEventActivity extends AppCompatActivity
         }
 
         final String eventTypeIndex = String.valueOf(fragment.eventTypeIndex);
-        final String provinceIndex = String.valueOf(fragment.provinceIndex+1);
+        final String provinceIndex = String.valueOf(fragment.provinceIndex + 1);
 
         // read file if select to resize and upload resized file to firebase
         if (mCurrentUri != null) {
@@ -266,6 +299,9 @@ public class PostEventActivity extends AppCompatActivity
     }
 
     private void doPostEvent(String title, final String eventPhotoUrl, String eventTypeIndex, String provinceIndex) {
+        if (latitude == 0 && longitude == 0) {
+            return;
+        }
         if (title.equals(""))
             title = getString(R.string.default_event_title);
         String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -304,9 +340,9 @@ public class PostEventActivity extends AppCompatActivity
                 bundle.putString(Helper.DISTRICT, district);
                 bundle.putString(Helper.PROVINCE, province);
                 if (eventPhotoUrl.equals(""))
-                    bundle.putBoolean(Helper.SUBMIT_WITH_IMAGE,false);
+                    bundle.putBoolean(Helper.SUBMIT_WITH_IMAGE, false);
                 else
-                    bundle.putBoolean(Helper.SUBMIT_WITH_IMAGE,true);
+                    bundle.putBoolean(Helper.SUBMIT_WITH_IMAGE, true);
                 mFirebaseAnalytics.logEvent(Helper.SUBMIT_EVENT, bundle);
 
                 mProgressDialog.dismiss();
@@ -481,5 +517,31 @@ public class PostEventActivity extends AppCompatActivity
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (latitude==0 && longitude==0) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+
+            Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }

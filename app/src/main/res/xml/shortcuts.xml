@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="post_event"
+        android:enabled="true"
+        android:icon="@drawable/ic_send_red_800_24dp"
+        android:shortcutShortLabel="@string/title_activity_post_event"
+        android:shortcutLongLabel="@string/title_activity_post_event"
+        android:shortcutDisabledMessage="@string/title_activity_post_event">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.appspace.evyalerts"
+            android:targetClass="com.appspace.evyalerts.activity.PostEventActivity" />
+        <!-- If your shortcut is associated with multiple intents, include them
+             here. The last intent in the list is what the user sees when they
+             launch this shortcut. -->
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <!-- Specify more shortcuts here. -->
+</shortcuts>
