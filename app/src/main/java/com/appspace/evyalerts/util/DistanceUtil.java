@@ -99,7 +99,7 @@ public class DistanceUtil {
             new ProvinceCentroid("YASOTHON", 15.89689193, 104.3390659)
     };
 
-    public float distanceBetween(double lat1, double lng1, ProvinceCentroid provinceCentroid) {
+    public double distanceBetween(double lat1, double lng1, ProvinceCentroid provinceCentroid) {
         double lat2 = provinceCentroid.lat;
         double lng2 = provinceCentroid.lng;
         double earthRadius = 6371000; //meters
@@ -110,10 +110,10 @@ public class DistanceUtil {
                         Math.sin(dLng / 2) * Math.sin(dLng / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        return (float) (earthRadius * c);
+        return earthRadius * c;
     }
 
-    public boolean isTooFar(float distance) {
+    public boolean isTooFar(double distance) {
         return distance > 100000;
     }
 }

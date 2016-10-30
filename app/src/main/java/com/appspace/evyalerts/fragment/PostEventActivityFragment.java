@@ -3,6 +3,7 @@ package com.appspace.evyalerts.fragment;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,6 +99,27 @@ public class PostEventActivityFragment extends Fragment implements
         spnProvince.performClick();
     }
 
+    public void autoSelectProvince() {
+        PostEventActivity activity = (PostEventActivity) getActivity();
+        double lat = activity.latitude;
+        double lng = activity.longitude;
+
+        ProvinceCentroid[] centroids = DistanceUtil.getInstance().provinceCentroids;
+
+        double minDistance = DistanceUtil.getInstance().distanceBetween(lat, lng, centroids[0]);
+        int minDistanceIndex = 0;
+
+        for (int i = 0; i < centroids.length; i++) {
+            double distance = DistanceUtil.getInstance().distanceBetween(lat, lng, centroids[i]);
+            if (distance < minDistance) {
+                minDistance = distance;
+                minDistanceIndex = i;
+            }
+        }
+        spnProvince.setSelection(minDistanceIndex, true);
+
+    }
+
     private void setEventButtonToNornalState() {
         toggleAccident.setChecked(false);
         toggleNaturalDisaster.setChecked(false);
@@ -154,7 +176,7 @@ public class PostEventActivityFragment extends Fragment implements
         double longitude = activity.longitude;
         ProvinceCentroid centroid = DistanceUtil.getInstance().provinceCentroids[provinceIndex];
 
-        float distance = DistanceUtil.getInstance().distanceBetween(latitude, longitude, centroid);
+        double distance = DistanceUtil.getInstance().distanceBetween(latitude, longitude, centroid);
         boolean isTooFar = DistanceUtil.getInstance().isTooFar(distance);
         LoggerUtils.log2D("distance", String.valueOf(isTooFar));
         if (isTooFar) {

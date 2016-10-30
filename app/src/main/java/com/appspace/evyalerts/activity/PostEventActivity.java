@@ -127,13 +127,15 @@ public class PostEventActivity extends AppCompatActivity implements
             event = intent.getParcelableExtra(Helper.MODEL_EVENT_KEY);
             LoggerUtils.log2D("PostMessageActivity", "EDIT_MODE isEditNews: " + isEditEvent);
             LoggerUtils.log2D("PostMessageActivity", "EDIT_MODE event: " + event);
-
-            PostEventActivityFragment fragment = (PostEventActivityFragment)
-                    getSupportFragmentManager().findFragmentById(R.id.fragment);
-            fragment.checkEditMode();
         } else {
             latitude = intent.getDoubleExtra(Helper.LATITUDE_KEY, 0);
             longitude = intent.getDoubleExtra(Helper.LONGITUDE_KEY, 0);
+
+            if (latitude != 0 && longitude != 0) {
+                PostEventActivityFragment fragment = (PostEventActivityFragment)
+                        getSupportFragmentManager().findFragmentById(R.id.fragment);
+                fragment.autoSelectProvince();
+            }
         }
     }
 
@@ -521,7 +523,7 @@ public class PostEventActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (latitude==0 && longitude==0) {
+        if (latitude == 0 && longitude == 0) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -532,6 +534,10 @@ public class PostEventActivity extends AppCompatActivity implements
             Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             latitude = location.getLatitude();
             longitude = location.getLongitude();
+
+            PostEventActivityFragment fragment = (PostEventActivityFragment)
+                    getSupportFragmentManager().findFragmentById(R.id.fragment);
+            fragment.autoSelectProvince();
         }
     }
 
